@@ -5,8 +5,12 @@
     "build": "turbo run build",
     "dev": "turbo run dev",
     "lint": "turbo run lint",
-    "format": "prettier --write \"**/*.{ts,tsx,md}\"",
-    "check-types": "turbo run check-types"
+    "format": "prettier . --write ",
+    "format:check": "npx prettier --check .",
+    "db:generate": "cd packages/database && npx prisma generate",
+    "db:migrate": "cd packages/database && npx prisma migrate dev",
+    "build:backend": "turbo run build --filter=backend",
+    "build:web": "turbo run build --filter=web"
   },
   "devDependencies": {
     "prettier": "^3.6.0",
@@ -20,5 +24,9 @@
   "workspaces": [
     "apps/*",
     "packages/*"
-  ]
+  ],
+  "dependencies": {
+    "better-auth": "^1.2.12",
+    "zod": "^3.25.67"
+  }
 }

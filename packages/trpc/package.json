@@ -1,0 +1,19 @@
+{
+  "name": "@repo/trpc",
+  "version": "1.0.0",
+  "main": "index.js",
+  "exports": {
+    ".": "./dist/index.js",
+    "./react": "./dist/react/index.js",
+    "./zodSchemas": "./dist/server/zodSchemas.js"
+  },
+  "types": "./dist/react/index.d.ts",
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "dependencies": {
+    "@repo/database": "*",
+    "simple-git": "^3.28.0"
+  }
+}

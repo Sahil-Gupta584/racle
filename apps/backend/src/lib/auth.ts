@@ -1,0 +1,22 @@
+import { prisma } from "@repo/database";
+import { betterAuth } from "better-auth";
+import { prismaAdapter } from "better-auth/adapters/prisma";
+import dotenv from "dotenv";
+import { dirname, resolve } from "path";
+import { fileURLToPath } from "url";
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
+dotenv.config({ path: resolve(__dirname, "../../../../.env") });
+
+export const auth = betterAuth({
+  database: prismaAdapter(prisma, {
+    provider: "postgresql", // or "mysql", "postgresql", ...etc
+  }),
+  socialProviders: {
+    google: {
+      clientId: process.env.GOOGLE_CLIENT_ID!,
+      clientSecret: process.env.GOOGLE_SECRET,
+    },
+  },
+  trustedOrigins: [process.env.VITE_WEB_BASE_URL],
+});

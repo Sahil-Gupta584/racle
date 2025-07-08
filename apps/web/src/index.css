@@ -1,0 +1,15 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+div[data-orientation="vertical"] {
+  @apply p-0;
+}
+label[data-slot="label"] {
+  @apply whitespace-nowrap;
+}
+@layer {
+  body {
+    @apply min-h-screen text-white;
+  }
+}
