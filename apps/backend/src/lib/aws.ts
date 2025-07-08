@@ -10,10 +10,7 @@ const bucketName = "racle";
 
 export async function uploadFileToS3(fileName: string, localFilePath: string) {
   try {
-    console.log({ localFilePath });
-
     const fileContent = fs.readFileSync(localFilePath);
-    console.log({ fileContent });
     await s3
       .upload({
         Bucket: bucketName,
@@ -27,8 +24,6 @@ export async function uploadFileToS3(fileName: string, localFilePath: string) {
 }
 export async function getS3Object(key: string) {
   try {
-    console.log({ key });
-
     return await s3
       .getObject({
         Bucket: bucketName,

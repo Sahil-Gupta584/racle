@@ -1,5 +1,6 @@
 import { Button } from "@heroui/react";
 import { createFileRoute } from "@tanstack/react-router";
+import { FaGithub } from "react-icons/fa6";
 import { FcGoogle } from "react-icons/fc";
 import { signIn } from "../lib/auth";
 
@@ -21,11 +22,24 @@ export default function RouteComponent() {
           onPress={async () => {
             await signIn.social({
               provider: "google",
-              callbackURL: import.meta.env.VITE_CREATOR_BASE_URL,
+              callbackURL: import.meta.env.VITE_WEB_BASE_URL,
             });
           }}
         >
           <FcGoogle className="text-2xl" />
+          Sign in with Google
+        </Button>
+        <Button
+          variant="bordered"
+          className="mt-4 flex items-center gap-3 px-6 py-3 text-lg font-medium text-gray-700 dark:text-gray-100 border border-gray-300 dark:border-gray-700 hover:border-indigo-500 dark:hover:border-indigo-400 hover:text-indigo-600 dark:hover:text-indigo-300 transition-all duration-200 ease-in-out"
+          onPress={async () => {
+            await signIn.social({
+              provider: "github",
+              callbackURL: import.meta.env.VITE_WEB_BASE_URL,
+            });
+          }}
+        >
+          <FaGithub className="text-2xl" />
           Sign in with Google
         </Button>
 

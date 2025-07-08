@@ -17,6 +17,11 @@ export const auth = betterAuth({
       clientId: process.env.GOOGLE_CLIENT_ID!,
       clientSecret: process.env.GOOGLE_SECRET,
     },
+    github: {
+      clientId: process.env.GITHUB_CLIENT_ID!,
+      clientSecret: process.env.GITHUB_SECRET,
+      scope: ["admin:repo_hook"],
+    },
   },
   trustedOrigins: [process.env.VITE_WEB_BASE_URL],
 });

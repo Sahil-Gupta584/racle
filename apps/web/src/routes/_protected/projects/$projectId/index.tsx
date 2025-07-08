@@ -1,6 +1,6 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 
-import { Button } from "@heroui/react";
+import { addToast, Button, Switch } from "@heroui/react";
 import { backend } from "@repo/trpc/react";
 import { Link } from "@tanstack/react-router";
 import {
@@ -14,12 +14,14 @@ import { BsArrowUpRight } from "react-icons/bs";
 import { CgLock } from "react-icons/cg";
 import { FaExternalLinkAlt } from "react-icons/fa";
 import { FiGitBranch } from "react-icons/fi";
+import { RiLoader2Line } from "react-icons/ri";
 import DeleteProject from "../../../-components/deleteProject";
 import {
   formatTimeAgo,
   getLatestCommitInfo,
   getStatusColor,
   getStatusIcon,
+  trpcErrorHandler,
 } from "../../../../lib/utils";
 
 export const Route = createFileRoute("/_protected/projects/$projectId/")({
@@ -28,7 +30,12 @@ export const Route = createFileRoute("/_protected/projects/$projectId/")({
 
 function ProjectDetailsPage() {
   const { projectId } = Route.useParams();
-  const { data, isPending } = backend.projects.read.useQuery({ projectId });
+  const toggleAutoDeployMutation =
+    backend.projects.toggleAutoDeploy.useMutation();
+
+  const { data, isPending, refetch } = backend.projects.read.useQuery({
+    projectId,
+  });
   const createDeploymentMutation = backend.deployment.create.useMutation();
   const navigate = useNavigate();
 
@@ -57,6 +64,24 @@ function ProjectDetailsPage() {
         projectId,
       },
     });
+  }
+  async function toggleAutoDeploy(isSelected: boolean) {
+    try {
+      const res = await toggleAutoDeployMutation.mutateAsync({
+        autoDeploy: isSelected,
+        projectId,
+      });
+      if (res.error) throw res.error;
+      await refetch();
+      addToast({
+        color: "success",
+        description: isSelected
+          ? "AutoDeploy Enabled Successfully."
+          : "AutoDeploy Disabled Successfully.",
+      });
+    } catch (error) {
+      trpcErrorHandler(error);
+    }
   }
   return (
     <div className="min-h-screen bg-gradient-to-br from-forge-950 via-forge-900 to-accent-950 text-forge-100">
@@ -147,7 +172,24 @@ function ProjectDetailsPage() {
             </div>
           )}
         </div>
-
+        <div className="mt-6 flex items-center justify-between">
+          <div>
+            <label className="text-sm font-medium text-white">
+              Auto Deploy
+            </label>
+            <p className="text-xs text-forge-400 mt-1">
+              Automatically deploy on new commits
+            </p>
+          </div>
+          {toggleAutoDeployMutation.isPending ? (
+            <RiLoader2Line className="w-5 h-5 text-blue-500 animate-spin" />
+          ) : (
+            <Switch
+              isSelected={project.autoDeploy}
+              onValueChange={toggleAutoDeploy}
+            />
+          )}
+        </div>
         {/* Deployments Section */}
         <div className="space-y-6">
           <div className="flex items-center justify-between">
@@ -156,9 +198,9 @@ function ProjectDetailsPage() {
               Recent Deployments
             </h2>
             {/* <button className="flex items-center px-4 py-2 bg-gradient-to-r from-accent-500 to-accent-600 hover:from-accent-600 hover:to-accent-700 text-white rounded-xl transition-all duration-200 text-sm shadow-lg hover:shadow-accent-500/25">
-              <BiPlus className="w-4 h-4 mr-2" />
-              New Deployment
-            </button> */}
+            <BiPlus className="w-4 h-4 mr-2" />
+            New Deployment
+          </button> */}
           </div>
 
           {project.deployments.length === 0 ? (

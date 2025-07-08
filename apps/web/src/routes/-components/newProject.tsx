@@ -1,7 +1,6 @@
 import {
   Accordion,
   AccordionItem,
-  addToast,
   Button,
   Input,
   Modal,
@@ -20,7 +19,7 @@ import { BiCode, BiGlobe, BiPlus } from "react-icons/bi";
 import { BsGithub } from "react-icons/bs";
 import { z } from "zod";
 import { useSession } from "../../lib/auth";
-import { getLatestCommitInfo, trpcErrorHandler } from "../../lib/utils";
+import { trpcErrorHandler } from "../../lib/utils";
 
 export default function NewProject() {
   const { isOpen, onOpen, onOpenChange, onClose } = useDisclosure();
@@ -42,45 +41,23 @@ export default function NewProject() {
     },
   });
 
-  async function createAndMoveToFirstDeployment(
-    repositoryUrl: string,
-    projectId: string
-  ) {
-    const commitInfo = await getLatestCommitInfo(repositoryUrl);
-    if (!commitInfo) throw new Error("Failed to fetch latest commit hash");
-
-    const deployment = await createDeploymentMutation.mutateAsync({
-      projectId,
-      commitHash: commitInfo.hash || "Unknown",
-      commitMessage: commitInfo.message || "Unknown",
-    });
-    onClose();
-    if (!deployment.result) throw new Error("Failed to create deployment");
-    navigate({
-      to: "/projects/$projectId/deployment/$deploymentId",
-      params: {
-        deploymentId: deployment.result.id as string,
-        projectId,
-      },
-    });
-  }
   async function onSubmit(formDataRaw: TProject) {
     try {
       if (!data?.user.id) return;
       formDataRaw.userId = data?.user.id;
       const formData = await zodSchemas.projects.create.parseAsync(formDataRaw);
       const res = await createProjectMutation.mutateAsync(formData);
-      if (!res.ok || !res.result) {
-        addToast({
-          color: "danger",
-          description: "Failed to create project",
-        });
-        return;
-      }
-      await createAndMoveToFirstDeployment(
-        formData.repositoryUrl,
-        res.result.id
-      );
+      if (res.error) throw res.error;
+      if (!res.result) throw new Error("Failed to create project");
+
+      navigate({
+        to: "/projects/$projectId/deployment/$deploymentId",
+        params: {
+          deploymentId: res.result.deployment.result.id as string,
+          projectId: res.result.project.id,
+        },
+      });
+      onClose();
     } catch (error) {
       trpcErrorHandler(error);
     }

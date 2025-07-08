@@ -42,26 +42,28 @@ export function parseGitHubRepoUrl(url: string) {
   if (!match) return null;
   return { owner: match[1], repo: match[2].replace(/\.git$/, "") };
 }
-export async function getLatestCommitInfo(repoUrl: string): Promise<{
-  hash: string;
-  message: string;
-} | null> {
-  const parsed = parseGitHubRepoUrl(repoUrl);
-  if (!parsed) return null;
+export async function getLatestCommitInfo(repoUrl: string) {
+  try {
+    const parsed = parseGitHubRepoUrl(repoUrl);
+    if (!parsed) return null;
 
-  const res = await fetch(
-    `https://api.github.com/repos/${parsed.owner}/${parsed.repo}/commits`
-  );
+    const res = await fetch(
+      `https://api.github.com/repos/${parsed.owner}/${parsed.repo}/commits`
+    );
+    console.log({ res });
 
-  if (!res.ok) return null;
+    if (!res.ok) return null;
 
-  const commits = await res.json();
-  const latest = commits?.[0];
+    const commits = await res.json();
+    const latest = commits?.[0];
 
-  return {
-    hash: latest?.sha,
-    message: latest?.commit?.message,
-  };
+    return {
+      hash: latest?.sha,
+      message: latest?.commit?.message,
+    };
+  } catch (error) {
+    console.log("Failed to get commit info", error);
+  }
 }
 
 export const formatTimeAgo = (dateString: string) => {

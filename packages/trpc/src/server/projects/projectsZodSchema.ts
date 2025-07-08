@@ -32,4 +32,8 @@ export const projectsZodSchema = {
   delete: z.object({
     projectId: z.string(),
   }),
+  toggleAutoDeploy: z.object({
+    projectId: z.string(),
+    autoDeploy: z.boolean(),
+  }),
 };

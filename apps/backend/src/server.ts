@@ -1,23 +1,18 @@
+import { prisma } from "@repo/database";
 import { appRouter } from "@repo/trpc";
 import * as trpcExpress from "@trpc/server/adapters/express";
+import { toNodeHandler } from "better-auth/node";
+import cors from "cors";
 import dotenv from "dotenv";
 import express from "express";
 import mime from "mime";
-import stripAnsi from "strip-ansi";
-
-import { prisma } from "@repo/database";
-import { toNodeHandler } from "better-auth/node";
-import { spawn } from "child_process";
-import cors from "cors";
-import { existsSync } from "fs";
 import path from "path";
-import { send } from "process";
-import simpleGit from "simple-git";
 import { Readable } from "stream";
+import stripAnsi from "strip-ansi";
 import { fileURLToPath } from "url";
 import { auth } from "./lib/auth";
-import { getS3Object, uploadFileToS3 } from "./lib/aws";
-import { getAllFiles } from "./lib/utils";
+import { getS3Object } from "./lib/aws";
+import { deployProject, verifySignature } from "./lib/utils";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -55,116 +50,66 @@ app.get("/trigger-deploy", async (req, res) => {
     res.setHeader("Cache-Control", "no-cache");
     res.setHeader("Connection", "keep-alive");
 
-    const logs: string[] = []; // ← Accumulate logs here
+    const deploymentId = req.query.deploymentId as string;
+    if (!deploymentId) throw new Error("Invalid deploymentId");
 
     const send = (msg: string) => {
       const lines = stripAnsi(msg).split("\n");
       for (const line of lines) {
         res.write(`data: ${line}\n`);
-        logs.push(line);
       }
-      res.write("\n"); // <- marks end of one SSE message
+      res.write("\n");
     };
 
-    const deploymentId = req.query.deploymentId as string;
-
-    if (!deploymentId) throw new Error("Invalid deploymentId");
-
-    const deployment = await prisma.deployments.findUnique({
-      where: { id: deploymentId as string },
-      include: { project: true },
-    });
-    if (!deployment) throw new Error("Project not found");
-
-    if (deployment.status !== "Building") {
-      if (deployment.logs) {
-        const oldLogs = deployment.logs.split("\n");
-        oldLogs.forEach((line) => {
-          send(line);
-        });
-        send(`data: End`);
-      } else {
-        send(`data: No logs available`);
-        send(`data: End`);
-      }
-      res.end();
-      return;
-    }
-
-    console.log("status", deployment.status);
-
-    await prisma.deployments.update({
-      where: { id: deploymentId },
-      data: { status: "Building" },
-    });
-    const projectPath = path.resolve(
-      "../../buildFolder",
-      deployment.project.id
-    );
-
-    if (!existsSync(projectPath)) {
-      await simpleGit().clone(deployment.project.repositoryUrl, projectPath);
-    }
-
-    await new Promise((resolve, reject) => {
-      const install = spawn(deployment.project.installCmd, {
-        cwd: projectPath,
-        shell: true,
-      });
-      send(deployment.project.installCmd);
-      install.stdout.on("data", (data) => send(data.toString()));
-      install.stderr.on("data", (data) => send(`ERROR: ${data.toString()}`));
-      install.on("close", (code) => {
-        if (code !== 0) return reject(new Error("npm install failed"));
-        resolve(code);
-      });
-    });
-
-    send(deployment.project.buildCmd);
-
-    await new Promise((resolve, reject) => {
-      const build = spawn(deployment.project.buildCmd, {
-        cwd: projectPath,
-        shell: true,
-      });
-      build.stdout.on("data", (data) => send(data.toString()));
-      build.stderr.on("data", (data) => send(`ERROR: ${data.toString()}`));
-      build.on("close", async (code) => {
-        if (code !== 0) return reject(new Error("npm build failed"));
-        await prisma.deployments.update({
-          where: { id: deploymentId },
-          data: { status: "Ready" },
-        });
-        resolve(code);
-      });
-    });
-
-    send("Build completed successfully.");
+    await deployProject(deploymentId, send);
     send("End");
-    await prisma.deployments.update({
-      where: { id: deploymentId },
-      data: {
-        logs: logs.join("\n"),
-      },
-    });
-    const allFiles = getAllFiles(path.join(projectPath, "dist"));
-    console.log({ allFiles });
-
-    allFiles.forEach(async (file) => {
-      await uploadFileToS3(
-        deployment.projectId + file.slice(projectPath.length + 5),
-        file
-      );
-    });
     res.end();
   } catch (error) {
     console.error(error);
-    await prisma.deployments.update({
-      where: { id: req.query.deploymentId as string },
-      data: { status: "Error" },
-    });
-    send("End");
     res.end();
+  }
+});
+
+app.post("/github-webhook", async (req, res) => {
+  try {
+    console.log(req.hostname, req.url);
+
+    console.log("headers", req.headers);
+    const signature = req.headers["x-hub-signature-256"] as string;
+    const webhook_secret = process.env.GITHUB_WEBHOOK_SECRET;
+    if (!signature)
+      throw new Error("Webhook signature not available in headers ");
+
+    if (!verifySignature(webhook_secret, signature, req.body))
+      throw new Error("Invalid signature");
+
+    const event = req.headers["x-github-event"];
+    if (event === "push") {
+      const repoName = req.body.repository.full_name;
+
+      // find deployment for this repo
+      const deployment = await prisma.deployments.findFirst({
+        where: {
+          project: {
+            repositoryUrl: {
+              contains: repoName, // You may need to adjust this
+            },
+          },
+        },
+        include: { project: true },
+      });
+
+      if (!deployment) throw new Error("No matching deployment");
+
+      await deployProject(deployment.id); // ← Triggers deployment
+
+      res.status(200).send("Triggered deployment");
+    } else {
+      res.status(200).send("Ignored event");
+    }
+  } catch (err) {
+    console.error(err);
+    res.status(500).send("Webhook failed");
   }
 });
 
