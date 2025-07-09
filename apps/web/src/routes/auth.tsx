@@ -1,14 +1,22 @@
 import { Button } from "@heroui/react";
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import { useEffect } from "react";
 import { FaGithub } from "react-icons/fa6";
 import { FcGoogle } from "react-icons/fc";
-import { signIn } from "../lib/auth";
+import { signIn, useSession } from "../lib/auth";
 
 export const Route = createFileRoute("/auth")({
   component: RouteComponent,
 });
 
 export default function RouteComponent() {
+  const { data } = useSession();
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (data?.user.id) navigate({ to: "/projects" });
+  }, [data?.user.id, navigate]);
+
   return (
     <div className="min-h-screen flex items-center justify-center px-4">
       <div className="w-full max-w-md bg-white dark:bg-gray-800 rounded-2xl shadow-lg dark:shadow-md p-8 flex flex-col items-center">

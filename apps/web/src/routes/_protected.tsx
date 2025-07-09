@@ -18,7 +18,6 @@ export default function Home() {
   const {
     location: { pathname },
   } = useRouterState();
-  const routesToHide = ["/auth", "/checkout"];
 
   useEffect(() => {
     if (isPending) return;

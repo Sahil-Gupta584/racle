@@ -1,10 +1,13 @@
 import { prisma } from "@repo/database";
 import { spawn } from "child_process";
-import fs, { existsSync } from "fs";
+import fs from "fs";
+import fsPromise from "fs/promises";
 import path from "path";
 import simpleGit from "simple-git";
 import stripAnsi from "strip-ansi";
 import { uploadFileToS3 } from "./aws";
+import { clearLiveLogs, initLiveLogs } from "./liveLogsMap";
+import { deleteLogStream, getOrCreateLogStream } from "./logStream";
 
 export function getAllFiles(folderPath: string) {
   let filePaths: string[] = [];
@@ -34,7 +37,7 @@ export async function verifySignature(secret: string, header: string, payload) {
     keyBytes,
     algorithm,
     extractable,
-    ["sign", "verify"]
+    ["sign", "verify"],
   );
 
   let sigBytes = hexToBytes(sigHex);
@@ -43,7 +46,7 @@ export async function verifySignature(secret: string, header: string, payload) {
     algorithm.name,
     key,
     sigBytes,
-    dataBytes
+    dataBytes,
   );
 
   return equal;
@@ -64,90 +67,131 @@ function hexToBytes(hex: string) {
   return bytes;
 }
 
-export async function deployProject(
+async function removeProjectDir(projectPath: string) {
+  await fsPromise.rm(projectPath, {
+    recursive: true,
+    force: true,
+  });
+}
+export async function buildAndDeployProject(
   deploymentId: string,
-  send?: (msg: string) => void
+  projectId: string,
 ) {
-  const logs: string[] = [];
+  const projectPath = path.resolve("../../buildFolder", projectId);
+  try {
+    console.log("Started Deploying", deploymentId);
 
-  const log = (msg: string) => {
-    const lines = stripAnsi(msg).split("\n");
-    for (const line of lines) {
-      send?.(line);
-      logs.push(line);
+    const logs = initLiveLogs(deploymentId); // ✅ call before logging
+    const emitter = getOrCreateLogStream(deploymentId);
+
+    const log = (msg: string) => {
+      const lines = stripAnsi(msg).split("\n");
+      for (const line of lines) {
+        emitter.emit("log", line);
+        console.log("log:", line);
+
+        logs.push(line);
+      }
+    };
+
+    const deployment = await prisma.deployments.findUnique({
+      where: { id: deploymentId },
+      include: { project: true },
+    });
+    if (!deployment) throw new Error("Deployment not found");
+
+    if (deployment.status === "Ready") {
+      log("Already built.");
+      return;
     }
-  };
 
-  const deployment = await prisma.deployments.findUnique({
-    where: { id: deploymentId },
-    include: { project: true },
-  });
-  if (!deployment) throw new Error("Deployment not found");
-
-  if (deployment.status === "Ready") {
-    log("Already built.");
-    return;
-  }
-
-  await prisma.deployments.update({
-    where: { id: deploymentId },
-    data: { status: "Building" },
-  });
-
-  const projectPath = path.resolve("../../buildFolder", deployment.project.id);
-
-  if (!existsSync(projectPath)) {
-    await simpleGit().clone(deployment.project.repositoryUrl, projectPath);
-  }
-
-  // install
-  await new Promise((resolve, reject) => {
-    const install = spawn(deployment.project.installCmd, {
-      cwd: projectPath,
-      shell: true,
+    await prisma.deployments.update({
+      where: { id: deploymentId },
+      data: { status: "Building" },
     });
-    log(deployment.project.installCmd);
-    install.stdout.on("data", (data) => log(data.toString()));
-    install.stderr.on("data", (data) => log(`ERROR: ${data.toString()}`));
-    install.on("close", (code) => {
-      if (code !== 0) return reject(new Error("Install failed"));
-      resolve(code);
-    });
-  });
 
-  // build
-  log(deployment.project.buildCmd);
-  await new Promise((resolve, reject) => {
-    const build = spawn(deployment.project.buildCmd, {
-      cwd: projectPath,
-      shell: true,
-    });
-    build.stdout.on("data", (data) => log(data.toString()));
-    build.stderr.on("data", (data) => log(`ERROR: ${data.toString()}`));
-    build.on("close", async (code) => {
-      if (code !== 0) return reject(new Error("Build failed"));
-      await prisma.deployments.update({
-        where: { id: deploymentId },
-        data: { status: "Ready" },
+    if (!fs.existsSync(projectPath)) {
+      await simpleGit().clone(deployment.project.repositoryUrl, projectPath);
+    }
+
+    // install
+    await new Promise((resolve, reject) => {
+      const install = spawn(deployment.project.installCmd, {
+        cwd: projectPath,
+        shell: true,
       });
-      resolve(code);
+      log(deployment.project.installCmd);
+      install.stdout.on("data", (data) => log(data.toString()));
+      install.stderr.on("data", (data) => log(`ERROR: ${data.toString()}`));
+      install.on("close", (code) => {
+        if (code !== 0) return reject(new Error("Install failed"));
+        resolve(code);
+      });
     });
-  });
 
-  const allFiles = getAllFiles(path.join(projectPath, "dist"));
-  for (const file of allFiles) {
-    await uploadFileToS3(
-      deployment.projectId + file.slice(projectPath.length + 5),
-      file
-    );
+    // build
+    log(deployment.project.buildCmd);
+    await new Promise((resolve, reject) => {
+      const build = spawn(deployment.project.buildCmd, {
+        cwd: projectPath,
+        shell: true,
+      });
+      build.stdout.on("data", (data) => log(data.toString()));
+      build.stderr.on("data", (data) => log(`ERROR: ${data.toString()}`));
+
+      build.on("error", (err) => {
+        log(`Spawn error: ${err.message}`);
+        reject(err); // ← This was missing!
+      });
+
+      build.on("close", async (code) => {
+        if (code !== 0) {
+          log(`Build process exited with code ${code}`);
+          log(`End`);
+          deleteLogStream(deploymentId);
+          clearLiveLogs(deploymentId); // ✅ cleanup
+
+          await prisma.deployments.update({
+            where: { id: deploymentId },
+            data: {
+              logs: logs.join("\n"),
+              status: "Error",
+            },
+          });
+          return reject(new Error("Build failed"));
+        }
+      });
+    });
+
+    //remove project src directory
+    await fsPromise.rm(path.join(projectPath, "src"), {
+      recursive: true,
+      force: true,
+    });
+    //remove project directory
+    await removeProjectDir(projectPath);
+    //upload build files to s3
+    const allFiles = getAllFiles(path.join(projectPath, "dist"));
+    for (const file of allFiles) {
+      await uploadFileToS3(
+        deployment.projectId + file.slice(projectPath.length + 5),
+        file,
+      );
+    }
+
+    //save logs to db
+    await prisma.deployments.update({
+      where: { id: deploymentId },
+      data: {
+        logs: logs.join("\n"),
+      },
+    });
+
+    console.log("Completed Deploying", deploymentId);
+    deleteLogStream(deploymentId);
+    clearLiveLogs(deploymentId); // ✅ cleanup
+  } catch (error) {
+    await removeProjectDir(projectPath);
+    console.log("error in buildAnDeploy", error);
   }
-
-  await prisma.deployments.update({
-    where: { id: deploymentId },
-    data: {
-      logs: logs.join("\n"),
-    },
-  });
-
-  log("Build completed.");
 }

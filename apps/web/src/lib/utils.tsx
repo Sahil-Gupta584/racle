@@ -48,9 +48,8 @@ export async function getLatestCommitInfo(repoUrl: string) {
     if (!parsed) return null;
 
     const res = await fetch(
-      `https://api.github.com/repos/${parsed.owner}/${parsed.repo}/commits`
+      `https://api.github.com/repos/${parsed.owner}/${parsed.repo}/commits`,
     );
-    console.log({ res });
 
     if (!res.ok) return null;
 
@@ -70,7 +69,7 @@ export const formatTimeAgo = (dateString: string) => {
   const now = new Date();
   const date = new Date(dateString);
   const diffInMinutes = Math.floor(
-    (now.getTime() - date.getTime()) / (1000 * 60)
+    (now.getTime() - date.getTime()) / (1000 * 60),
   );
 
   if (diffInMinutes < 60) {
@@ -101,7 +100,7 @@ export const getStatusColor = (status: string) => {
       return "bg-green-500/20 text-green-400 border-green-500/30";
     case "Building":
       return "bg-blue-500/20 text-blue-400 border-blue-500/30";
-    case "Failed":
+    case "Error":
       return "bg-red-500/20 text-red-400 border-red-500/30";
     default:
       return "bg-slate-500/20 text-slate-400 border-slate-500/30";

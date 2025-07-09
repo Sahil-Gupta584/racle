@@ -34,6 +34,7 @@ model Projects {
   installCmd    String
   buildCmd      String
   runCmd        String
+  hookId        Int?
   autoDeploy    Boolean
   envs          String?
   createdAt     DateTime      @default(now())

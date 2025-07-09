@@ -49,11 +49,16 @@ export default function NewProject() {
       const res = await createProjectMutation.mutateAsync(formData);
       if (res.error) throw res.error;
       if (!res.result) throw new Error("Failed to create project");
+      const triggerDeploymentRes = await fetch(
+        `${import.meta.env.VITE_BACKEND_URL}/trigger-deploy?deploymentId=${res.result.deployment.id}`,
+      );
+      const result = await triggerDeploymentRes.json();
+      if (!result.ok) throw new Error("Failed to trigger deployment");
 
       navigate({
         to: "/projects/$projectId/deployment/$deploymentId",
         params: {
-          deploymentId: res.result.deployment.result.id as string,
+          deploymentId: res.result.deployment.id as string,
           projectId: res.result.project.id,
         },
       });

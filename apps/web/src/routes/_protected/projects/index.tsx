@@ -1,7 +1,6 @@
 import { backend } from "@repo/trpc/react";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import {
-  BiCalendar,
   BiCheckCircle,
   BiFilter,
   BiGlobe,
@@ -10,8 +9,12 @@ import {
 } from "react-icons/bi";
 import { BsActivity, BsArrowUpRight } from "react-icons/bs";
 import { FaExternalLinkAlt } from "react-icons/fa";
-import { FiGitBranch, FiZap } from "react-icons/fi";
-import { formatTimeAgo, getStatusIcon } from "../../../lib/utils";
+import { FiClock, FiGitBranch, FiGitCommit, FiZap } from "react-icons/fi";
+import {
+  formatTimeAgo,
+  getStatusColor,
+  getStatusIcon,
+} from "../../../lib/utils";
 
 export const Route = createFileRoute("/_protected/projects/")({
   component: Projects,
@@ -67,7 +70,7 @@ function Projects() {
                   Total Projects
                 </p>
                 <p className="text-2xl font-bold text-white mt-1">
-                  {projects.length}
+                  {data.result.length}
                 </p>
               </div>
               <BiPackage className="w-8 h-8 text-accent-500" />
@@ -82,7 +85,7 @@ function Projects() {
                 <p className="text-2xl font-bold text-white mt-1">
                   {data.result.reduce(
                     (acc, p) => acc + p._count.deployments,
-                    0
+                    0,
                   )}
                 </p>
               </div>
@@ -128,7 +131,15 @@ function Projects() {
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {data.result.map((project) => {
-              const latestStatus = "Ready";
+              const latestStatus = project.deployments[0]
+                ? project.deployments[0].status
+                : "";
+              const { commitMessage } = project.deployments[0] || {
+                commitHash: "",
+                commitMessage: "",
+              };
+              const latestDeployment = project.deployments[0];
+
               return (
                 <Link
                   key={project.id}
@@ -155,28 +166,50 @@ function Projects() {
                   </div>
 
                   {/* Repository Info */}
-                  <div className="space-y-3 mb-4">
-                    <div className="flex items-center text-sm text-forge-400">
-                      <FiGitBranch className="w-4 h-4 mr-2 text-accent-400" />
-                      <span className="truncate">
-                        {getRepoName(project.repositoryUrl)}
+                  <div className="space-y-2 mb-4">
+                    <div className="flex items-center justify-between text-sm text-forge-400">
+                      <div className="flex items-center min-w-0 flex-1">
+                        <FiGitBranch className="w-4 h-4 mr-2 text-accent-400" />
+                        <span className="text-accent-400 hover:text-accent-300 transition-colors flex items-center group cursor-pointer truncate">
+                          {getRepoName(project.repositoryUrl)}
+                        </span>
+                      </div>
+                      <span className="ml-2 px-2 py-1 bg-forge-700/50 rounded text-xs text-forge-300">
+                        main
                       </span>
                     </div>
                     <div className="flex items-center text-sm text-forge-400">
                       <BiGlobe className="w-4 h-4 mr-2 text-accent-400" />
-                      <a
-                        target="_blank"
-                        href={`https://${project.domainName}.racle.xyz`}
-                        rel="noopener noreferrer"
-                        className="text-accent-400 hover:text-accent-300 transition-colors flex items-center group"
+                      <span
+                        onClick={(e) => {
+                          e.preventDefault();
+                          e.stopPropagation();
+                          window.open(
+                            `https://${project.domainName}.racle.xyz`,
+                            "_blank",
+                          );
+                        }}
+                        className="text-accent-400 hover:text-accent-300 transition-colors flex items-center group cursor-pointer"
                       >
                         https://{project.domainName}.racle.xyz
                         <FaExternalLinkAlt className="w-3 h-3 ml-1 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
-                      </a>
+                      </span>
                     </div>
-                    <div className="flex items-center text-sm text-forge-400">
-                      <BiCalendar className="w-4 h-4 mr-2 text-emerald-400" />
-                      <span>Created {formatTimeAgo(project.createdAt)}</span>
+
+                    {/* Commit & Deployment in one line */}
+                    <div className="flex items-center justify-between text-xs text-forge-400">
+                      <div className="flex items-center min-w-0 flex-1">
+                        <FiGitCommit className="w-3 h-3 mr-1 text-accent-400" />
+                        <span className="truncate mr-2" title={commitMessage}>
+                          {commitMessage || "No commit message"}
+                        </span>
+                      </div>
+                      {latestDeployment && (
+                        <span className="flex items-center ml-2">
+                          <FiClock className="w-3 h-3 mr-1 text-blue-400" />
+                          {formatTimeAgo(latestDeployment.createdAt)}
+                        </span>
+                      )}
                     </div>
                   </div>
 
@@ -198,36 +231,4 @@ function Projects() {
       </div>
     </div>
   );
-}
-
-// Commented out unused code for minimal dashboard
-// const stats = [...];
-// const activities = [...];
-
-const projects = [
-  {
-    id: "1",
-    name: "ecommerce-frontend",
-    status: "Ready",
-    statusIcon: () => (
-      <span className="inline-block w-2.5 h-2.5 bg-status-green rounded-full mr-1" />
-    ),
-    branch: "main",
-    lastDeploy: "2 hours ago",
-    domain: "shop.example.com",
-    repo: "https://vercel.com/sahil-gupta584s-projects?repo=https://github.com/Sahil-Gupta584/syncmate",
-  },
-];
-
-function getStatusColor(status: string) {
-  switch (status) {
-    case "Ready":
-      return "bg-status-green text-status-green";
-    case "Building":
-      return "bg-status-blue text-status-blue";
-    case "Error":
-      return "bg-status-red text-status-red";
-    default:
-      return "bg-border-800 text-text-gray";
-  }
 }

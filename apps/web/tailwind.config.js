@@ -123,5 +123,12 @@ export default {
       },
     },
   },
-  plugins: [heroui({ themes: { light: { colors: { primary: { DEFAULT: '#d935ee', "800": '#d935ee' } } }, dark: { colors: { primary: { DEFAULT: '#d935ee', "800": '#d935ee' } } } } })],
+  plugins: [
+    heroui({
+      themes: {
+        light: { colors: { primary: { DEFAULT: "#d935ee", 800: "#d935ee" } } },
+        dark: { colors: { primary: { DEFAULT: "#d935ee", 800: "#d935ee" } } },
+      },
+    }),
+  ],
 };

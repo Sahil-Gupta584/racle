@@ -29,7 +29,7 @@ function LandingPage() {
                 <FiZap className="w-5 h-5 text-white" />
               </div>
               <span className="text-xl font-bold bg-gradient-to-r from-white to-forge-300 bg-clip-text text-transparent">
-                DeployForge
+                Racle
               </span>
             </div>
             <div className="hidden md:flex items-center space-x-8">
@@ -213,14 +213,20 @@ function LandingPage() {
                 <FiZap className="w-5 h-5 text-white" />
               </div>
               <span className="text-xl font-bold bg-gradient-to-r from-white to-forge-300 bg-clip-text text-transparent">
-                DeployForge
+                Racle
               </span>
             </div>
             <div className="flex items-center space-x-8">
-              <BsGithub className="w-6 h-6 text-forge-400 hover:text-white cursor-pointer transition-colors" />
-              <BsTwitterX className="w-6 h-6 text-forge-400 hover:text-white cursor-pointer transition-colors" />
+              <BsGithub
+                href="https://github.com/Sahil-Gupta584/racle"
+                className="w-6 h-6 text-forge-400 hover:text-white cursor-pointer transition-colors"
+              />
+              <BsTwitterX
+                href="https://x.com/sahil_builds"
+                className="w-6 h-6 text-forge-400 hover:text-white cursor-pointer transition-colors"
+              />
               <span className="text-forge-400 text-sm">
-                © 2024 DeployForge. Crafted with precision.
+                © 2024 Racle. Crafted with precision.
               </span>
             </div>
           </div>

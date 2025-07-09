@@ -46,7 +46,7 @@ function ProjectDetailsPage() {
   const project = data.result;
   async function createAndMoveToFirstDeployment(
     repositoryUrl: string,
-    projectId: string
+    projectId: string,
   ) {
     const commitInfo = await getLatestCommitInfo(repositoryUrl);
     if (!commitInfo) throw new Error("Failed to fetch latest commit hash");
@@ -80,6 +80,7 @@ function ProjectDetailsPage() {
           : "AutoDeploy Disabled Successfully.",
       });
     } catch (error) {
+      refetch();
       trpcErrorHandler(error);
     }
   }
@@ -113,10 +114,12 @@ function ProjectDetailsPage() {
             </div>
           </div>
           <div className="flex items-center space-x-3">
-            <button className="flex items-center px-4 py-2 bg-forge-800/50 backdrop-blur-sm hover:bg-forge-700/50 border border-forge-700/50 text-forge-300 hover:text-white rounded-xl transition-all duration-200">
-              <BiGlobe className="w-4 h-4 mr-2" />
-              Visit Site
-            </button>
+            <a href={"https://" + data.result.domainName + ".racle.com"}>
+              <button className="flex items-center px-4 py-2 bg-forge-800/50 backdrop-blur-sm hover:bg-forge-700/50 border border-forge-700/50 text-forge-300 hover:text-white rounded-xl transition-all duration-200">
+                <BiGlobe className="w-4 h-4 mr-2" />
+                Visit Site
+              </button>
+            </a>
             <DeleteProject name={project.name} projectId={projectId} />
           </div>
         </div>
@@ -216,7 +219,7 @@ function ProjectDetailsPage() {
                 onPress={() =>
                   createAndMoveToFirstDeployment(
                     project.repositoryUrl,
-                    project.id
+                    project.id,
                   )
                 }
                 isLoading={createDeploymentMutation.isPending}
@@ -274,7 +277,7 @@ function ProjectDetailsPage() {
         </div>
 
         {/* Quick Stats */}
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           <div className="bg-forge-800/50 backdrop-blur-sm border border-forge-700/50 rounded-xl p-6 text-center">
             <div className="text-2xl font-bold text-white mb-1">
               {project.deployments.length}
@@ -292,10 +295,6 @@ function ProjectDetailsPage() {
               {project.deployments.filter((d) => d.status === "Error").length}
             </div>
             <div className="text-sm text-forge-400">Failed</div>
-          </div>
-          <div className="bg-forge-800/50 backdrop-blur-sm border border-forge-700/50 rounded-xl p-6 text-center">
-            <div className="text-2xl font-bold text-accent-400 mb-1">99.2%</div>
-            <div className="text-sm text-forge-400">Success Rate</div>
           </div>
         </div>
       </div>

@@ -33,7 +33,7 @@ export default function Header() {
                 <FiZap className="w-5 h-5 text-white" />
               </div>
               <span className="text-xl font-bold bg-gradient-to-r from-white to-forge-300 bg-clip-text text-transparent">
-                DeployForge
+                Racle
               </span>
             </Link>
 

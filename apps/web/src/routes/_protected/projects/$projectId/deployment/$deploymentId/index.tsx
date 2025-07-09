@@ -14,7 +14,7 @@ import { TbLoader2 } from "react-icons/tb";
 import { getStatusColor, getStatusIcon } from "../../../../../../lib/utils";
 
 export const Route = createFileRoute(
-  "/_protected/projects/$projectId/deployment/$deploymentId/"
+  "/_protected/projects/$projectId/deployment/$deploymentId/",
 )({
   component: DeploymentPage,
 });
@@ -34,12 +34,11 @@ function DeploymentPage() {
     setHasTriggered(true);
     setIsStreaming(true);
     const eventSource = new EventSource(
-      `http://localhost:3000/trigger-deploy?deploymentId=${deploymentId}`
+      `http://localhost:3000/get-logs?deploymentId=${deploymentId}`,
     );
     backendUtils.projects.read.invalidate();
     eventSource.onmessage = (event) => {
-      console.log("data:", event.data);
-      if (String(event.data).trim() == "End") {
+      if (String(event.data).trim() === "End") {
         setIsStreaming(false);
         refetch();
       } else {
@@ -236,7 +235,9 @@ function DeploymentPage() {
               </div>
 
               <div className="relative">
-                <div className="bg-forge-900 text-emerald-400 p-6 font-mono text-sm overflow-auto max-h-[600px] min-h-[400px]">
+                <div
+                  className={`bg-forge-900 text-emerald-400 ${data.result && data.result.status === "Error" && "text-red-400"}  p-6 font-mono text-sm overflow-auto max-h-[600px] min-h-[400px]`}
+                >
                   {/* Terminal Header */}
                   <div className="flex items-center space-x-2 mb-4 pb-2 border-b border-forge-700/50">
                     <div className="flex space-x-1">
@@ -264,7 +265,7 @@ function DeploymentPage() {
                           <span className="text-forge-500 text-xs mt-0.5 font-mono min-w-[60px]">
                             {String(index + 1).padStart(3, "0")}
                           </span>
-                          <span className="text-emerald-400 group-hover:text-emerald-300 transition-colors">
+                          <span className=" group-hover:text-emerald-300 transition-colors">
                             {log}
                           </span>
                         </div>
