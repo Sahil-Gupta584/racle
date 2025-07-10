@@ -1,11 +1,10 @@
 {
   "name": "@repo/trpc",
   "version": "1.0.0",
-  "main": "index.js",
-  "exports": {
-    ".": "./dist/index.js",
-    "./react": "./dist/react/index.js",
-    "./zodSchemas": "./dist/server/zodSchemas.js"
+  "type": "module",
+  "main": "./dist/index.js",
+  "scripts": {
+    "build": "tsc"
   },
   "types": "./dist/react/index.d.ts",
   "keywords": [],

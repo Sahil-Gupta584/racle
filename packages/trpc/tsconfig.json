@@ -1,5 +1,4 @@
 {
-  "extends": "@repo/typescript-config/react-library.json",
   "compilerOptions": {
     "module": "ESNext",
     "target": "ES2020",
@@ -7,7 +6,18 @@
     "outDir": "dist",
     "rootDir": "src",
     "skipLibCheck": true,
-    "types": ["node", "@prisma/client"]
+    "types": ["node", "@prisma/client"],
+
+    "declaration": true,
+    "declarationMap": true,
+    "esModuleInterop": true,
+    "incremental": false,
+    "isolatedModules": true,
+    "lib": ["es2022", "DOM", "DOM.Iterable"],
+    "moduleDetection": "force",
+    "noUncheckedIndexedAccess": true,
+    "resolveJsonModule": true,
+    "strict": true
   },
 
   "exclude": ["dist", "build", "node_modules"]

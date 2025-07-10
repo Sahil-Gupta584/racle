@@ -1,1 +1,1 @@
-export * from "./server/router";
+export { appRouter, type AppRouter } from "./server/router.js";

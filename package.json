@@ -10,7 +10,8 @@
     "db:generate": "cd packages/database && npx prisma generate",
     "db:migrate": "cd packages/database && npx prisma migrate dev",
     "build:backend": "turbo run build --filter=backend",
-    "build:web": "turbo run build --filter=web"
+    "build:web": "turbo run build --filter=web",
+    "start:backend": "turbo run start --filter=backend"
   },
   "devDependencies": {
     "prettier": "^3.6.0",

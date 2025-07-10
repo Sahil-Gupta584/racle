@@ -1,5 +1,5 @@
 import { prisma } from "@repo/database";
-import { appRouter } from "@repo/trpc";
+import { appRouter } from "@repo/trpc/dist";
 import * as trpcExpress from "@trpc/server/adapters/express";
 import { toNodeHandler } from "better-auth/node";
 import cors from "cors";
@@ -26,7 +26,7 @@ app.use(
   cors({
     origin: [process.env.VITE_WEB_BASE_URL!],
     credentials: true,
-  }),
+  })
 );
 app.all("/api/auth/*any", toNodeHandler(auth));
 app.use((req, res, next) => {
@@ -40,7 +40,7 @@ app.use(
   trpcExpress.createExpressMiddleware({
     router: appRouter,
     createContext: () => ({}),
-  }),
+  })
 );
 
 app.get(
@@ -76,7 +76,7 @@ app.get(
     req.on("close", () => {
       emitter.removeListener("log", send);
     });
-  }),
+  })
 );
 
 app.get(
@@ -99,7 +99,7 @@ app.get(
       });
     }
     res.json({ ok: true });
-  }),
+  })
 );
 
 app.post(
@@ -135,7 +135,7 @@ app.post(
           ? commits.sort(
               (a, b) =>
                 new Date(b.timestamp).getTime() -
-                new Date(a.timestamp).getTime(),
+                new Date(a.timestamp).getTime()
             )[0]
           : null;
       if (!latestCommit.id || !latestCommit.message)
@@ -390,7 +390,7 @@ app.post(
     } else {
       res.status(200).send("Ignored event");
     }
-  }),
+  })
 );
 
 app.get("{*any}", async (req, res) => {

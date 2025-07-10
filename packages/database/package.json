@@ -5,7 +5,7 @@
   "types": "dist/index.d.ts",
   "scripts": {
     "db:generate": "prisma generate",
-    "db:migrate": "prisma migrate dev --skip-generate",
+    "db:migrate": "prisma migrate dev ",
     "build": "tsc",
     "db:deploy": "prisma migrate deploy"
   },

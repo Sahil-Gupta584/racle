@@ -1,6 +1,6 @@
 import { Octokit } from "@octokit/rest";
 import { prisma } from "@repo/database";
-// import dotenv from "dotenv";
+
 import {
   backendRes,
   getLatestCommitInfo,
@@ -38,7 +38,7 @@ export const projectsRouter = trpcRouter({
         });
         if (isDomainNameExist)
           throw new Error(
-            "Domain name already exists, please try a different one.",
+            "Domain name already exists, please try a different one."
           );
         const account = await prisma.account.findFirst({
           where: { userId: input.userId, providerId: "github" },
@@ -142,7 +142,7 @@ export const projectsRouter = trpcRouter({
         });
         if (!project)
           throw new Error(
-            `project not found to delete projectId:${input.projectId}`,
+            `project not found to delete projectId:${input.projectId}`
           );
 
         const parsedData = parseGitHubRepoUrl(project.repositoryUrl);
