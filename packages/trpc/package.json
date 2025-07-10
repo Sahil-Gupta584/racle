@@ -3,14 +3,24 @@
   "version": "1.0.0",
   "type": "module",
   "main": "./dist/index.js",
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    },
+    "./react": {
+      "import": "./dist/react/index.js",
+      "types": "./dist/react/index.d.ts"
+    },
+    "./zodSchemas": {
+      "import": "./dist/server/zodSchemas.js",
+      "types": "./dist/react/zodSchemas.d.ts"
+    }
+  },
   "scripts": {
     "build": "tsc"
   },
-  "types": "./dist/react/index.d.ts",
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
-  "description": "",
+  "types": "./dist/index.d.ts",
   "dependencies": {
     "@octokit/rest": "^22.0.0",
     "@repo/database": "*",

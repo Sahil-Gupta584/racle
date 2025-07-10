@@ -2,7 +2,8 @@
   "name": "@repo/database",
   "version": "1.0.0",
   "main": "index.js",
-  "types": "dist/index.d.ts",
+  "type": "module",
+  "types": "./dist/index.d.ts",
   "scripts": {
     "db:generate": "prisma generate",
     "db:migrate": "prisma migrate dev ",
