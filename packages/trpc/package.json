@@ -14,7 +14,7 @@
     },
     "./zodSchemas": {
       "import": "./dist/server/zodSchemas.js",
-      "types": "./dist/react/zodSchemas.d.ts"
+      "types": "./dist/server/zodSchemas.d.ts"
     }
   },
   "scripts": {
