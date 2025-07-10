@@ -1,4 +1,4 @@
-import { backend } from "@repo/trpc/react";
+import { backend, type TBackendOutput } from "@repo/trpc/react";
 import { createFileRoute } from "@tanstack/react-router";
 import { BiCheckCircle, BiFilter, BiPackage, BiSearch } from "react-icons/bi";
 import { BsActivity } from "react-icons/bs";
@@ -11,6 +11,9 @@ export const Route = createFileRoute("/_protected/projects/")({
 
 function Projects() {
   const { data } = backend.projects.getAll.useQuery();
+  type TProject = NonNullable<
+    TBackendOutput["projects"]["getAll"]["result"]
+  >[number];
 
   if (!data?.result) return "Loading...";
   return (
@@ -65,7 +68,7 @@ function Projects() {
                 </p>
                 <p className="text-2xl font-bold text-white mt-1">
                   {data.result.reduce(
-                    (acc, p) => acc + p._count.deployments,
+                    (acc, p: TProject) => acc + p._count.deployments,
                     0
                   )}
                 </p>
@@ -111,7 +114,7 @@ function Projects() {
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {data.result.map((project) => (
+            {data.result.map((project: TProject) => (
               <ProjectCard project={project} />
             ))}
           </div>

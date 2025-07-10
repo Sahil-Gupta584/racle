@@ -1,7 +1,7 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 
 import { addToast, Button, Switch } from "@heroui/react";
-import { backend } from "@repo/trpc/react";
+import { backend, type TBackendOutput } from "@repo/trpc/react";
 import { Link } from "@tanstack/react-router";
 import {
   BiCalendar,
@@ -28,6 +28,7 @@ export const Route = createFileRoute("/_protected/projects/$projectId/")({
   component: ProjectDetailsPage,
 });
 
+type TProject = TBackendOutput["projects"]["read"]["result"];
 function ProjectDetailsPage() {
   const { projectId } = Route.useParams();
   const toggleAutoDeployMutation =
@@ -43,10 +44,10 @@ function ProjectDetailsPage() {
   if (!data?.result)
     return <div className="p-6 text-red-600">Project not found</div>;
 
-  const project = data.result;
+  const project: TProject = data.result;
   async function createAndMoveToFirstDeployment(
     repositoryUrl: string,
-    projectId: string,
+    projectId: string
   ) {
     const commitInfo = await getLatestCommitInfo(repositoryUrl);
     if (!commitInfo) throw new Error("Failed to fetch latest commit hash");
@@ -219,7 +220,7 @@ function ProjectDetailsPage() {
                 onPress={() =>
                   createAndMoveToFirstDeployment(
                     project.repositoryUrl,
-                    project.id,
+                    project.id
                   )
                 }
                 isLoading={createDeploymentMutation.isPending}
