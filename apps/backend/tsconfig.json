@@ -1,8 +1,8 @@
 {
   "compilerOptions": {
-    "target": "esnext",
-    "module": "esnext",
-    "moduleResolution": "node", // 🔄 Let TS match Node.js behavior
+    "target": "es2022",
+    "module": "es2022",
+    "moduleResolution": "bundler",
     "outDir": "./dist",
     "rootDir": "./src",
     "esModuleInterop": true,
@@ -13,7 +13,7 @@
     "preserveSymlinks": true,
     "declaration": true,
     "removeComments": true,
-    "allowJs": false
+    "allowJs": true
   },
   "exclude": ["dist", "node_modules"]
 }

@@ -18,12 +18,13 @@
     }
   },
   "scripts": {
-    "build": "tsc"
+    "build": "tsc && ts-add-js-extension --dir=dist"
   },
   "types": "./dist/index.d.ts",
   "dependencies": {
     "@octokit/rest": "^22.0.0",
     "@repo/database": "*",
-    "simple-git": "^3.28.0"
+    "simple-git": "^3.28.0",
+    "ts-add-js-extension": "^1.6.6"
   }
 }

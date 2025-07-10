@@ -3,10 +3,10 @@
     "composite": true,
     "incremental": true,
     "target": "ES2022",
-    "module": "nodenext",
+    "module": "es2022",
     "esModuleInterop": true,
     "strict": true,
-    "moduleResolution": "nodenext",
+    "moduleResolution": "bundler",
     "outDir": "./dist",
     "rootDir": "./src",
 
