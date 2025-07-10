@@ -12,11 +12,11 @@
   "license": "ISC",
   "description": "",
   "dependencies": {
+    "@aws-sdk/client-s3": "^3.844.0",
     "@repo/database": "*",
     "@repo/trpc": "*",
     "@trpc/react-query": "^11.4.3",
     "@trpc/server": "^11.4.3",
-    "aws-sdk": "^2.1692.0",
     "cors": "^2.8.5",
     "express": "^5.1.0",
     "mime": "^4.0.7",

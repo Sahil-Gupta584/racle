@@ -9,9 +9,10 @@
     "format:check": "npx prettier --check .",
     "db:generate": "cd packages/database && npx prisma generate",
     "db:migrate": "cd packages/database && npx prisma migrate dev",
-    "build:backend": "turbo run build --filter=backend",
-    "build:web": "turbo run build --filter=web",
-    "start:backend": "npm run db:generate && turbo run start --filter=backend"
+    "build:web": "npm run db:generate && turbo run build --filter=web",
+    "build:backend": "npm run db:generate && turbo run build --filter=backend",
+    "start:backend": " turbo run start --filter=backend",
+    "start:web": " turbo run start --filter=web"
   },
   "devDependencies": {
     "prettier": "^3.6.0",
