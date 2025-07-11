@@ -10,17 +10,19 @@ export const Route = createFileRoute("/auth")({
 });
 
 export default function RouteComponent() {
-  const { data } = useSession();
+  const { data, isPending } = useSession();
   const navigate = useNavigate();
 
   useEffect(() => {
-    console.log({ user: data, outside: true });
+    if (isPending) return;
+
+    console.log({ user: data, outside: true, isPending });
     if (data?.user.id) {
-      console.log({ user: data.user });
+      console.log({ user: data.user, isPending });
 
       navigate({ to: "/projects" });
     }
-  }, [data?.user, navigate]);
+  }, [data?.user, data, navigate, isPending]);
 
   return (
     <div className="min-h-screen flex items-center justify-center px-4">

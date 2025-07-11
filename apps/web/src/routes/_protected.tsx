@@ -1,9 +1,4 @@
-import {
-  createFileRoute,
-  Outlet,
-  useNavigate,
-  useRouterState,
-} from "@tanstack/react-router";
+import { createFileRoute, Outlet, useNavigate } from "@tanstack/react-router";
 import { useEffect } from "react";
 import { useSession } from "../lib/auth";
 import Header from "./-components/header";
@@ -15,18 +10,13 @@ export const Route = createFileRoute("/_protected")({
 export default function Home() {
   const { data, isPending } = useSession();
   const navigate = useNavigate();
-  const {
-    location: { pathname },
-  } = useRouterState();
 
   useEffect(() => {
     if (isPending) return;
+    console.log({ isPending, data });
+
     if (!data) {
       navigate({ to: "/auth" });
-      return;
-    }
-    if (data && pathname === "/auth") {
-      navigate({ to: "/" });
       return;
     }
   }, [isPending]);
