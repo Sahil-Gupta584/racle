@@ -3,7 +3,7 @@ import { CgLock } from "react-icons/cg";
 import { FaCheckCircle } from "react-icons/fa";
 import { FiAlertCircle } from "react-icons/fi";
 import { RiLoader2Line } from "react-icons/ri";
-export const backendUrl = process.env.VITE_BACKEND_URL;
+export const backendUrl = import.meta.env.VITE_BACKEND_URL;
 if (!backendUrl) throw new Error("Backend Url not found");
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
