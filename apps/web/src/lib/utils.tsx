@@ -3,6 +3,8 @@ import { CgLock } from "react-icons/cg";
 import { FaCheckCircle } from "react-icons/fa";
 import { FiAlertCircle } from "react-icons/fi";
 import { RiLoader2Line } from "react-icons/ri";
+export const backendUrl = process.env.VITE_BACKEND_URL;
+if (!backendUrl) throw new Error("Backend Url not found");
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function trpcErrorHandler(error: any) {
@@ -48,7 +50,7 @@ export async function getLatestCommitInfo(repoUrl: string) {
     if (!parsed) return null;
 
     const res = await fetch(
-      `https://api.github.com/repos/${parsed.owner}/${parsed.repo}/commits`,
+      `https://api.github.com/repos/${parsed.owner}/${parsed.repo}/commits`
     );
 
     if (!res.ok) return null;
@@ -69,7 +71,7 @@ export const formatTimeAgo = (dateString: string) => {
   const now = new Date();
   const date = new Date(dateString);
   const diffInMinutes = Math.floor(
-    (now.getTime() - date.getTime()) / (1000 * 60),
+    (now.getTime() - date.getTime()) / (1000 * 60)
   );
 
   if (diffInMinutes < 60) {

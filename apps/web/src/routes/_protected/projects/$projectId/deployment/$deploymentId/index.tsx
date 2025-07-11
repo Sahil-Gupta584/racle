@@ -11,10 +11,14 @@ import {
 import { FaExternalLinkAlt } from "react-icons/fa";
 import { FiRefreshCw } from "react-icons/fi";
 import { TbLoader2 } from "react-icons/tb";
-import { getStatusColor, getStatusIcon } from "../../../../../../lib/utils";
+import {
+  backendUrl,
+  getStatusColor,
+  getStatusIcon,
+} from "../../../../../../lib/utils";
 
 export const Route = createFileRoute(
-  "/_protected/projects/$projectId/deployment/$deploymentId/",
+  "/_protected/projects/$projectId/deployment/$deploymentId/"
 )({
   component: DeploymentPage,
 });
@@ -34,7 +38,7 @@ function DeploymentPage() {
     setHasTriggered(true);
     setIsStreaming(true);
     const eventSource = new EventSource(
-      `http://localhost:3000/get-logs?deploymentId=${deploymentId}`,
+      backendUrl + `/get-logs?deploymentId=${deploymentId}`
     );
     backendUtils.projects.read.invalidate();
     eventSource.onmessage = (event) => {

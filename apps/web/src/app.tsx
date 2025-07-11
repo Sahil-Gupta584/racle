@@ -7,6 +7,7 @@ import { useCallback, useEffect, useState } from "react";
 import { HeroUIProvider, ToastProvider } from "@heroui/react";
 import { backend } from "@repo/trpc/react";
 // import { ThemeProvider } from "next-themes";
+import { backendUrl } from "./lib/utils";
 import { routeTree } from "./routeTree.gen";
 
 const router = createRouter({ routeTree });
@@ -24,7 +25,7 @@ export function App() {
     return backend.createClient({
       links: [
         httpBatchLink({
-          url: "http://localhost:3000/trpc",
+          url: backendUrl + "/trpc",
         }),
       ],
     });
