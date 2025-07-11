@@ -14,6 +14,7 @@ export default function RouteComponent() {
   const navigate = useNavigate();
 
   useEffect(() => {
+    console.log({ user: data, outside: true });
     if (data?.user.id) {
       console.log({ user: data.user });
 
