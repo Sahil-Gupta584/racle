@@ -22,7 +22,7 @@ export default function Home() {
   useEffect(() => {
     if (isPending) return;
     if (!data) {
-      // navigate({ to: "/auth" });
+      navigate({ to: "/auth" });
       return;
     }
     if (data && pathname === "/auth") {

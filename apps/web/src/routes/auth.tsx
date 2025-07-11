@@ -14,8 +14,12 @@ export default function RouteComponent() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    if (data?.user.id) navigate({ to: "/projects" });
-  }, [data?.user.id, navigate]);
+    if (data?.user.id) {
+      console.log({ user: data.user });
+
+      navigate({ to: "/projects" });
+    }
+  }, [data?.user, navigate]);
 
   return (
     <div className="min-h-screen flex items-center justify-center px-4">
