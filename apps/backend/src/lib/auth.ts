@@ -29,4 +29,5 @@ export const auth = betterAuth({
     },
   },
   trustedOrigins: [process.env.VITE_WEB_BASE_URL],
+  secret: process.env.BETTER_AUTH_SECRET,
 });
