@@ -27,6 +27,7 @@ export const auth = betterAuth({
       clientSecret: process.env.GITHUB_SECRET,
       scope: ["admin:repo_hook"],
     },
+    advanced: { defaultCookieAttributes: { sameSite: "None", secure: true } },
   },
   trustedOrigins: [process.env.VITE_WEB_BASE_URL],
   secret: process.env.BETTER_AUTH_SECRET,
