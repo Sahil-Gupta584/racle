@@ -21,6 +21,7 @@ export const auth = betterAuth({
     google: {
       clientId: process.env.GOOGLE_CLIENT_ID!,
       clientSecret: process.env.GOOGLE_SECRET,
+      redirectURI: process.env.VITE_WEB_BASE_URL + "/projects",
     },
     github: {
       clientId: process.env.GITHUB_CLIENT_ID!,
