@@ -1,22 +1,24 @@
 {
   "compilerOptions": {
-    "composite": true,
-    "incremental": true,
-    "target": "ES2022",
-    "module": "es2022",
-    "esModuleInterop": true,
-    "strict": true,
+    "module": "ESNext",
+    "target": "ES2020",
     "moduleResolution": "bundler",
     "outDir": "./dist",
     "rootDir": "./src",
+    "skipLibCheck": true,
+    "types": ["node", "@prisma/client"],
 
     "declaration": true,
     "declarationMap": true,
+    "esModuleInterop": true,
+    "incremental": false,
     "isolatedModules": true,
     "lib": ["es2022", "DOM", "DOM.Iterable"],
     "moduleDetection": "force",
     "noUncheckedIndexedAccess": true,
     "resolveJsonModule": true,
-    "skipLibCheck": true
-  }
+    "strict": true
+  },
+
+  "exclude": ["dist", "build", "node_modules"]
 }
