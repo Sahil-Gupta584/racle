@@ -4,7 +4,12 @@ import { BiGlobe } from "react-icons/bi";
 import { BsArrowUpRight } from "react-icons/bs";
 import { FaExternalLinkAlt } from "react-icons/fa";
 import { FiClock, FiGitBranch, FiGitCommit, FiZap } from "react-icons/fi";
-import { formatTimeAgo, getStatusColor, getStatusIcon } from "../../lib/utils";
+import {
+  formatTimeAgo,
+  getProjectUrl,
+  getStatusColor,
+  getStatusIcon,
+} from "../../lib/utils";
 
 type TProject = NonNullable<
   TBackendOutput["projects"]["getAll"]["result"]
@@ -72,11 +77,11 @@ export default function ProjectCard({ project }: { project: TProject }) {
             onClick={(e) => {
               e.preventDefault();
               e.stopPropagation();
-              window.open(`https://${project.domainName}.racle.xyz`, "_blank");
+              window.open(getProjectUrl(project.domainName), "_blank");
             }}
             className="text-accent-400 hover:text-accent-300 transition-colors flex items-center group cursor-pointer"
           >
-            https://{project.domainName}.racle.xyz
+            {getProjectUrl(project.domainName)}
             <FaExternalLinkAlt className="w-3 h-3 ml-1 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
           </span>
         </div>
@@ -84,7 +89,7 @@ export default function ProjectCard({ project }: { project: TProject }) {
         {/* Commit & Deployment in one line */}
         <div className="flex items-center justify-between text-xs text-forge-400">
           <div className="flex items-center min-w-0 flex-1">
-            <FiGitCommit className="w-3 h-3 mr-1 text-accent-400" />
+            <FiGitCommit className="w-4 h-4 mr-1 text-accent-400" />
             <span className="truncate mr-2" title={commitMessage}>
               {commitMessage || "No commit message"}
             </span>

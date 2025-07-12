@@ -19,7 +19,7 @@ export const Route = createFileRoute("/")({
 
 function LandingPage() {
   return (
-    <div className="min-h-screen bg-gradient-to-br from-forge-950 via-forge-900 to-accent-950">
+    <div className="grow bg-gradient-to-br from-forge-950 via-forge-900 to-accent-950">
       {/* Navigation */}
       <nav className="fixed top-0 w-full z-50 bg-forge-950/90 backdrop-blur-xl border-b border-forge-800/50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -186,7 +186,7 @@ function LandingPage() {
       {/* CTA Section */}
       <section className="py-24 px-4 sm:px-6 lg:px-8 relative">
         <div className="absolute inset-0 bg-gradient-to-r from-accent-500/10 to-emerald-500/10 blur-3xl"></div>
-        <div className="max-w-4xl mx-auto text-center relative">
+        <div className="max-w-7xl mx-auto text-center relative">
           <h2 className="text-4xl sm:text-5xl font-bold text-white mb-8">
             Ready to transform your workflow?
           </h2>

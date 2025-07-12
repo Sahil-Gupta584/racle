@@ -17,10 +17,10 @@ function Projects() {
 
   if (!data?.result) return "Loading...";
   return (
-    <div className="min-h-screen bg-gradient-to-br from-forge-950 via-forge-900 to-accent-950 text-forge-100">
-      <div className="p-8 max-w-7xl mx-auto space-y-8">
+    <div className="grow bg-gradient-to-br from-forge-950 via-forge-900 to-accent-950 text-forge-100">
+      <div className="p-8 max-w-7xl mx-auto md:space-y-8 space-y-4">
         {/* Header */}
-        <div className="flex items-center justify-between">
+        <div className="flex flex-col-reverse md:flex-row md:items-center justify-between gap-6">
           <div className="space-y-2">
             <h1 className="text-3xl font-bold bg-gradient-to-r from-white to-forge-300 bg-clip-text text-transparent">
               Projects
@@ -29,13 +29,13 @@ function Projects() {
               Manage and deploy your applications
             </p>
           </div>
-          <div className="flex items-center space-x-4">
-            <div className="relative">
+          <div className="flex items-center space-x-4 ">
+            <div className="relative grow">
               <BiSearch className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-forge-400" />
               <input
                 type="text"
                 placeholder="Search projects..."
-                className="pl-10 pr-4 py-2.5 bg-forge-800/50 backdrop-blur-sm border border-forge-700/50 rounded-xl text-white placeholder-forge-400 focus:outline-none focus:ring-2 focus:ring-accent-500/50 focus:border-accent-500/50 transition-all w-64"
+                className="pl-10 w-full md:w-64 pr-4 py-2.5 bg-forge-800/50 backdrop-blur-sm border border-forge-700/50 rounded-xl text-white placeholder-forge-400 focus:outline-none focus:ring-2 focus:ring-accent-500/50 focus:border-accent-500/50 transition-all "
               />
             </div>
             <button className="flex items-center px-3 py-2.5 bg-forge-800/50 backdrop-blur-sm hover:bg-forge-700/50 border border-forge-700/50 rounded-xl text-forge-300 hover:text-white transition-all duration-200">
@@ -46,7 +46,7 @@ function Projects() {
         </div>
 
         {/* Stats Overview */}
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
           <div className="bg-forge-800/50 backdrop-blur-sm border border-forge-700/50 rounded-xl p-6">
             <div className="flex items-center justify-between">
               <div>
@@ -115,7 +115,7 @@ function Projects() {
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {data.result.map((project: TProject) => (
-              <ProjectCard project={project} />
+              <ProjectCard project={project} key={project.id} />
             ))}
           </div>
         )}

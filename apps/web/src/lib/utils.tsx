@@ -108,3 +108,10 @@ export const getStatusColor = (status: string) => {
       return "bg-slate-500/20 text-slate-400 border-slate-500/30";
   }
 };
+
+export function getProjectUrl(domainName: string) {
+  if (!import.meta.env.DEV) {
+    return `http://${domainName}.localhost:3000`; // Or whatever your local dev server uses
+  }
+  return `https://${domainName}.racle.xyz`;
+}

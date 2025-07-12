@@ -1,34 +1,23 @@
 import { prisma } from "@repo/database";
+import { getS3Object } from "@repo/lib/aws";
+import { env } from "@repo/lib/envs";
 import { appRouter } from "@repo/trpc";
 import * as trpcExpress from "@trpc/server/adapters/express";
 import { toNodeHandler } from "better-auth/node";
 import cors from "cors";
-import dotenv from "dotenv";
 import express from "express";
 import mime from "mime";
-import path from "path";
 import { Readable } from "stream";
-import { fileURLToPath } from "url";
 import { enqueueBuild } from "./buildWorker";
 import { auth } from "./lib/auth";
-import { getS3Object } from "./lib/aws";
 import { getLiveLogs } from "./lib/liveLogsMap";
 import { getOrCreateLogStream } from "./lib/logStream";
 import { tryCatch } from "./lib/tryCatchWrapper";
 import { verifySignature } from "./lib/utils";
-
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
-dotenv.config({ path: path.resolve(__dirname, "../../../.env") });
-console.log({
-  source: "server.ts",
-  "process.env.GOOGLE_CLIENT_ID": process.env.GOOGLE_CLIENT_ID,
-  "process.env.DATABASE_URL": process.env.DATABASE_URL,
-});
 const app = express();
 app.use(
   cors({
-    origin: [process.env.VITE_WEB_BASE_URL!],
+    origin: [env.VITE_WEB_BASE_URL!],
     credentials: true,
   })
 );
@@ -110,7 +99,7 @@ app.post(
   "/github-webhook",
   tryCatch(async (req, res) => {
     const signature = req.headers["x-hub-signature-256"] as string;
-    const webhook_secret = process.env.GITHUB_WEBHOOK_SECRET;
+    const webhook_secret = env.GITHUB_WEBHOOK_SECRET;
 
     if (!signature) throw new Error("Signature missing");
 
@@ -165,46 +154,51 @@ app.post(
 );
 
 app.get("{*any}", async (req, res) => {
-  const host = req.hostname;
+  try {
+    const host = req.hostname;
 
-  const subdomain = host.split(".")[0];
+    const subdomain = host.split(".")[0];
 
-  const project = await prisma.projects.findFirst({
-    where: { domainName: subdomain },
-  });
+    const project = await prisma.projects.findFirst({
+      where: { domainName: subdomain },
+    });
 
-  if (!project) {
-    res.status(404).send("Project not found");
-    return;
-  }
-  const filePath = req.path === "/" ? "index.html" : req.path.slice(1); // remove leading "/"
-  const type = filePath.endsWith("html")
-    ? "text/html"
-    : filePath.endsWith("css")
-      ? "text/css"
-      : filePath.endsWith("svg")
-        ? "image/svg+xml"
-        : "application/javascript";
+    if (!project) {
+      res.status(404).send("Project not found");
+      return;
+    }
+    const filePath = req.path === "/" ? "index.html" : req.path.slice(1); // remove leading "/"
+    const type = filePath.endsWith("html")
+      ? "text/html"
+      : filePath.endsWith("css")
+        ? "text/css"
+        : filePath.endsWith("svg")
+          ? "image/svg+xml"
+          : "application/javascript";
 
-  const key = `${project.id}/${filePath}`;
+    const key = `${project.id}/${filePath}`;
 
-  const fileBody = await getS3Object(key);
+    const fileBody = await getS3Object(key);
 
-  if (!fileBody?.Body) {
-    res.status(500).send("Failed to load Body");
-    return;
-  }
+    if (!fileBody?.Body) {
+      res.status(500).send("Failed to load Body");
+      return;
+    }
 
-  // Automatically detect and set MIME type
-  const contentType = mime.getType(filePath) || "application/octet-stream";
-  console.log({ contentType });
-  res.setHeader("Content-Type", contentType);
-  if (fileBody.Body instanceof Readable) {
-    fileBody.Body.pipe(res);
-  } else {
-    res.send(fileBody.Body);
+    // Automatically detect and set MIME type
+    const contentType = mime.getType(filePath) || "application/octet-stream";
+    console.log({ contentType });
+    res.setHeader("Content-Type", contentType);
+    if (fileBody.Body instanceof Readable) {
+      fileBody.Body.pipe(res);
+    } else {
+      res.send(fileBody.Body);
+    }
+  } catch (error) {
+    console.log("Error to server project", error);
+    res.send("Error to server project");
   }
 });
 
-const PORT = process.env.PORT;
+const PORT = env.PORT;
 app.listen(PORT, () => console.log("server listening on ", PORT));

@@ -1,25 +1,22 @@
 import fs from "fs";
 
 import {
+  DeleteObjectCommand,
   GetObjectCommand,
   PutObjectCommand,
   S3Client,
 } from "@aws-sdk/client-s3";
+import { env } from "./env";
 
 const s3 = new S3Client({
   credentials: {
-    accessKeyId: process.env.AWS_ACCESS_KEY_ID!,
-    secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY!,
+    accessKeyId: env.CLOUDFLARE_ACCESS_KEY_ID!,
+    secretAccessKey: env.CLOUDFLARE_SECRET_ACCESS_KEY!,
   },
-  endpoint: process.env.AWS_ENDPOINT!,
+  region: "auto",
+  endpoint: env.CLOUDFLARE_ENDPOINT!,
 });
 
-// const s3 = new AWS.S3({
-//   accessKeyId: process.env.AWS_ACCESS_KEY_ID!,
-//   secretAccessKey:
-//     process.env.AWS_SECRET_ACCESS_KEY!,
-//   endpoint: process.env.AWS_ENDPOINT!,
-// });
 const bucketName = "racle";
 
 export async function uploadFileToS3(fileName: string, localFilePath: string) {
@@ -36,6 +33,7 @@ export async function uploadFileToS3(fileName: string, localFilePath: string) {
     console.error(error);
   }
 }
+
 export async function getS3Object(key: string) {
   try {
     return await s3.send(
@@ -45,7 +43,20 @@ export async function getS3Object(key: string) {
       })
     );
   } catch (error) {
-    console.error(error, "for key", key);
+    console.error(error);
+  }
+}
+
+export async function deleteObject(key: string) {
+  try {
+    return await s3.send(
+      new DeleteObjectCommand({
+        Bucket: bucketName,
+        Key: key,
+      })
+    );
+  } catch (error) {
+    console.error(error);
   }
 }
 

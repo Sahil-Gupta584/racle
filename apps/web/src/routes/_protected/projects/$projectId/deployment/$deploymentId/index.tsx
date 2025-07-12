@@ -1,3 +1,4 @@
+import { Accordion, AccordionItem } from "@heroui/react";
 import { backend } from "@repo/trpc/react";
 import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
@@ -13,6 +14,7 @@ import { FiRefreshCw } from "react-icons/fi";
 import { TbLoader2 } from "react-icons/tb";
 import {
   backendUrl,
+  getProjectUrl,
   getStatusColor,
   getStatusIcon,
 } from "../../../../../../lib/utils";
@@ -67,12 +69,12 @@ function DeploymentPage() {
   const project = deployment.project;
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-forge-950 via-forge-900 to-accent-950 text-forge-100">
+    <div className="grow bg-gradient-to-br from-forge-950 via-forge-900 to-accent-950 text-forge-100">
       <div className="p-8 max-w-7xl mx-auto space-y-8">
         {/* Header */}
         <div className="space-y-6">
-          <div className="flex items-center justify-between">
-            <div className="space-y-2">
+          <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+            <div className="space-y-2 max-w-lg">
               <h1 className="text-3xl font-bold bg-gradient-to-r from-white to-forge-300 bg-clip-text text-transparent">
                 Deployment Details
               </h1>
@@ -80,21 +82,25 @@ function DeploymentPage() {
                 <span className="font-mono">{deployment.id}</span>
               </div>
             </div>
-            <div className="flex items-center space-x-3">
+            <div className="flex items-center gap-3">
+              <a
+                href={getProjectUrl(project.domainName)}
+                target="_blank"
+                className="cursor-pointer flex items-center px-4 py-2 bg-gradient-to-r from-accent-500 to-accent-600 hover:from-accent-600 hover:to-accent-700 text-white rounded-xl transition-all duration-200 shadow-lg hover:shadow-accent-500/25"
+              >
+                <FaExternalLinkAlt className="w-4 h-4 mr-2" />
+                Visit Site
+              </a>
               <button className="flex items-center px-4 py-2 bg-forge-800/50 backdrop-blur-sm hover:bg-forge-700/50 border border-forge-700/50 text-forge-300 hover:text-white rounded-xl transition-all duration-200">
                 <FiRefreshCw className="w-4 h-4 mr-2" />
                 Redeploy
-              </button>
-              <button className="flex items-center px-4 py-2 bg-gradient-to-r from-accent-500 to-accent-600 hover:from-accent-600 hover:to-accent-700 text-white rounded-xl transition-all duration-200 shadow-lg hover:shadow-accent-500/25">
-                <FaExternalLinkAlt className="w-4 h-4 mr-2" />
-                Visit Site
               </button>
             </div>
           </div>
 
           {/* Status Card */}
           <div className="bg-forge-800/50 backdrop-blur-sm border border-forge-700/50 rounded-xl p-6">
-            <div className="flex items-center justify-between">
+            <div className="flex flex-col md:flex-row md:items-center justify-between">
               <div className="flex items-center space-x-4">
                 {getStatusIcon(deployment.status)}
                 <div>
@@ -114,19 +120,21 @@ function DeploymentPage() {
                       {deployment.status}
                     </span>
                   </div>
-                  <div className="flex items-center space-x-4 mt-2 text-sm text-forge-400">
+                  <div className="flex flex-col md:flex-row md:items-center gap-4 mt-2 text-sm text-forge-400">
                     <div className="flex items-center">
                       <BiGitBranch className="w-4 h-4 mr-1 text-accent-400" />
                       main
                     </div>
-                    <div className="flex items-center">
-                      <BiCode className="w-4 h-4 mr-1 text-emerald-400" />
-                      {deployment.commitHash}
+                    <div className="flex items-center truncate">
+                      <BiCode className="w-4 h-4 mr-1 text-emerald-400 " />
+                      <span className="w-[80%] truncate">
+                        {deployment.commitHash}
+                      </span>
                     </div>
                   </div>
                 </div>
               </div>
-              <div className="text-right">
+              <div className="md:text-right ml-[39px] mt-4">
                 <div className="text-sm text-forge-400">Commit</div>
                 <div className="font-medium text-white">
                   {deployment.commitMessage}
@@ -136,88 +144,123 @@ function DeploymentPage() {
           </div>
         </div>
 
-        {/* Main Content Grid */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          {/* Project Information */}
           <div className="lg:col-span-1 space-y-6">
-            <div className="bg-forge-800/50 backdrop-blur-sm border border-forge-700/50 rounded-xl p-6">
-              <h2 className="text-lg font-semibold text-white mb-4 flex items-center">
-                <BiPackage className="w-5 h-5 mr-2 text-accent-500" />
-                Project Configuration
-              </h2>
-              <div className="space-y-4">
-                <div>
-                  <label className="text-xs font-medium text-forge-400 uppercase tracking-wider">
-                    Project Name
-                  </label>
-                  <div className="mt-1 text-white font-medium">
-                    {project.name}
+            <Accordion>
+              <AccordionItem
+                key="1"
+                aria-label="Accordion 1"
+                title="Project Configuration"
+                className="bg-forge-800/50 backdrop-blur-sm border border-forge-700/50 rounded-xl p-6"
+                startContent={
+                  <BiPackage className="w-5 h-5 mr-2 text-accent-500" />
+                }
+                classNames={{
+                  title: ["text-lg font-semibold text-white flex items-center"],
+                  base: ["p-6"],
+                  trigger: ["p-0"],
+                }}
+              >
+                <div className="space-y-4">
+                  <div>
+                    <label className="text-xs font-medium text-forge-400 uppercase tracking-wider">
+                      Project Name
+                    </label>
+                    <div className="mt-1 text-white font-medium">
+                      {project.name}
+                    </div>
+                  </div>
+                  <div>
+                    <label className="text-xs font-medium text-forge-400 uppercase tracking-wider">
+                      Repository
+                    </label>
+                    <div className="mt-1">
+                      <a
+                        href={project.repositoryUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-accent-400 hover:text-accent-300 text-sm flex items-center group transition-colors"
+                      >
+                        {project.repositoryUrl.replace(
+                          "https://github.com/",
+                          ""
+                        )}
+                        <FaExternalLinkAlt className="w-3 h-3 ml-1 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
+                      </a>
+                    </div>
+                  </div>
+                  <div>
+                    <label className="text-xs font-medium text-forge-400 uppercase tracking-wider">
+                      Framework
+                    </label>
+                    <div className="mt-1 text-white font-medium">Vite</div>
                   </div>
                 </div>
-                <div>
-                  <label className="text-xs font-medium text-forge-400 uppercase tracking-wider">
-                    Repository
-                  </label>
-                  <div className="mt-1">
-                    <a
-                      href={project.repositoryUrl}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="text-accent-400 hover:text-accent-300 text-sm flex items-center group transition-colors"
-                    >
-                      {project.repositoryUrl.replace("https://github.com/", "")}
-                      <FaExternalLinkAlt className="w-3 h-3 ml-1 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
-                    </a>
-                  </div>
-                </div>
-                <div>
-                  <label className="text-xs font-medium text-forge-400 uppercase tracking-wider">
-                    Framework
-                  </label>
-                  <div className="mt-1 text-white font-medium">Vite</div>
-                </div>
-              </div>
-            </div>
+              </AccordionItem>
+            </Accordion>
 
             {/* Build Commands */}
-            <div className="bg-forge-800/50 backdrop-blur-sm border border-forge-700/50 rounded-xl p-6">
-              <h2 className="text-lg font-semibold text-white mb-4 flex items-center">
-                <BiTerminal className="w-5 h-5 mr-2 text-emerald-500" />
-                Build Commands
-              </h2>
-              <div className="space-y-4">
-                <div>
-                  <label className="text-xs font-medium text-forge-400 uppercase tracking-wider">
-                    Install
-                  </label>
-                  <div className="mt-1 bg-forge-900/50 border border-forge-700/50 rounded-lg p-3">
-                    <code className="text-sm text-emerald-400 font-mono">
-                      {project.installCmd}
-                    </code>
+            <Accordion>
+              <AccordionItem
+                key="1"
+                aria-label="Accordion 1"
+                title="Build Configuration"
+                className="bg-forge-800/50 backdrop-blur-sm border border-forge-700/50 rounded-xl p-6"
+                startContent={
+                  <BiPackage className="w-5 h-5 mr-2 text-accent-500" />
+                }
+                classNames={{
+                  title: ["text-lg font-semibold text-white flex items-center"],
+                  base: ["p-6"],
+                  trigger: ["p-0"],
+                }}
+              >
+                <div className="space-y-2">
+                  <div>
+                    <label className="text-xs font-medium text-forge-400 uppercase tracking-wider">
+                      Install Command
+                    </label>
+                    <div className="mt-2 bg-forge-900/50 border border-forge-700/50 rounded-lg p-3">
+                      <code className="text-sm text-emerald-400 font-mono">
+                        {project.installCmd}
+                      </code>
+                    </div>
+                  </div>
+                  <div>
+                    <label className="text-xs font-medium text-forge-400 uppercase tracking-wider">
+                      Build Command
+                    </label>
+                    <div className="mt-2 bg-forge-900/50 border border-forge-700/50 rounded-lg p-3">
+                      <code className="text-sm text-emerald-400 font-mono">
+                        {project.buildCmd}
+                      </code>
+                    </div>
+                  </div>
+                  <div>
+                    <label className="text-xs font-medium text-forge-400 uppercase tracking-wider">
+                      Start Command
+                    </label>
+                    <div className="mt-2 bg-forge-900/50 border border-forge-700/50 rounded-lg p-3">
+                      <code className="text-sm text-emerald-400 font-mono">
+                        {project.runCmd}
+                      </code>
+                    </div>
                   </div>
                 </div>
-                <div>
-                  <label className="text-xs font-medium text-forge-400 uppercase tracking-wider">
-                    Build
-                  </label>
-                  <div className="mt-1 bg-forge-900/50 border border-forge-700/50 rounded-lg p-3">
-                    <code className="text-sm text-emerald-400 font-mono">
-                      {project.buildCmd}
-                    </code>
+                {project.envs && (
+                  <div className="mt-6">
+                    <label className="text-xs font-medium text-forge-400 uppercase tracking-wider">
+                      Environment Variables
+                    </label>
+                    <div className="mt-2 bg-forge-900/50 border border-forge-700/50 rounded-lg p-3">
+                      <code className="text-sm text-emerald-400 font-mono">
+                        {project.envs}
+                      </code>
+                    </div>
                   </div>
-                </div>
-                <div>
-                  <label className="text-xs font-medium text-forge-400 uppercase tracking-wider">
-                    Start
-                  </label>
-                  <div className="mt-1 bg-forge-900/50 border border-forge-700/50 rounded-lg p-3">
-                    <code className="text-sm text-emerald-400 font-mono">
-                      {project.runCmd}
-                    </code>
-                  </div>
-                </div>
-              </div>
-            </div>
+                )}
+              </AccordionItem>
+            </Accordion>
           </div>
 
           {/* Deployment Logs */}
@@ -240,7 +283,7 @@ function DeploymentPage() {
 
               <div className="relative">
                 <div
-                  className={`bg-forge-900 text-emerald-400 ${data.result && data.result.status === "Error" && "text-red-400"}  p-6 font-mono text-sm overflow-auto max-h-[600px] min-h-[400px]`}
+                  className={`bg-forge-900 text-emerald-400 ${data.result && data.result.status === "Error" && "text-red-400"}  p-6 font-mono text-sm overflow-auto h-[400px]`}
                 >
                   {/* Terminal Header */}
                   <div className="flex items-center space-x-2 mb-4 pb-2 border-b border-forge-700/50">
@@ -250,7 +293,7 @@ function DeploymentPage() {
                       <div className="w-3 h-3 bg-emerald-500 rounded-full"></div>
                     </div>
                     <span className="text-forge-400 text-xs">
-                      deployment-{deploymentId}
+                      deployment: {deploymentId}
                     </span>
                   </div>
 

@@ -10,6 +10,6 @@ label[data-slot="label"] {
 }
 @layer {
   body {
-    @apply min-h-screen text-white;
+    @apply grow text-white;
   }
 }

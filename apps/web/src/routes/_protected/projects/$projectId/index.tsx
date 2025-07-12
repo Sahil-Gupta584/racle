@@ -1,6 +1,12 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 
-import { addToast, Button, Switch } from "@heroui/react";
+import {
+  Accordion,
+  AccordionItem,
+  addToast,
+  Button,
+  Switch,
+} from "@heroui/react";
 import { backend, type TBackendOutput } from "@repo/trpc/react";
 import { Link } from "@tanstack/react-router";
 import {
@@ -19,6 +25,7 @@ import DeleteProject from "../../../-components/deleteProject";
 import {
   formatTimeAgo,
   getLatestCommitInfo,
+  getProjectUrl,
   getStatusColor,
   getStatusIcon,
   trpcErrorHandler,
@@ -86,15 +93,15 @@ function ProjectDetailsPage() {
     }
   }
   return (
-    <div className="min-h-screen bg-gradient-to-br from-forge-950 via-forge-900 to-accent-950 text-forge-100">
+    <div className="grow bg-gradient-to-br from-forge-950 via-forge-900 to-accent-950 text-forge-100">
       <div className="p-8 max-w-7xl mx-auto space-y-8">
         {/* Header */}
-        <div className="flex items-center justify-between">
-          <div className="space-y-2">
-            <h1 className="text-3xl font-bold bg-gradient-to-r from-white to-forge-300 bg-clip-text text-transparent">
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
+          <div className="space-y-2 max-w-lg">
+            <h1 className="text-3xl font-bold bg-gradient-to-r from-white to-forge-300 bg-clip-text text-transparent truncate">
               {project.name}
             </h1>
-            <div className="flex items-center space-x-4 text-sm text-forge-400">
+            <div className="flex flex-col md:flex-row md:items-center gap-4 text-sm text-forge-400">
               <div className="flex items-center">
                 <FiGitBranch className="w-4 h-4 mr-1 text-accent-400" />
                 <a
@@ -107,15 +114,15 @@ function ProjectDetailsPage() {
                   <FaExternalLinkAlt className="w-3 h-3 ml-1 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
                 </a>
               </div>
-              <span>•</span>
+              <span className="hidden md:inline">•</span>
               <div className="flex items-center">
                 <BiCalendar className="w-4 h-4 mr-1 text-emerald-400" />
                 Created {formatTimeAgo(project.createdAt)}
               </div>
             </div>
           </div>
-          <div className="flex items-center space-x-3">
-            <a href={"https://" + data.result.domainName + ".racle.com"}>
+          <div className="flex items-center justify-between md:justify-normal space-x-3">
+            <a href={getProjectUrl(project.domainName)}>
               <button className="flex items-center px-4 py-2 bg-forge-800/50 backdrop-blur-sm hover:bg-forge-700/50 border border-forge-700/50 text-forge-300 hover:text-white rounded-xl transition-all duration-200">
                 <BiGlobe className="w-4 h-4 mr-2" />
                 Visit Site
@@ -126,56 +133,68 @@ function ProjectDetailsPage() {
         </div>
 
         {/* Project Configuration */}
-        <div className="bg-forge-800/50 backdrop-blur-sm border border-forge-700/50 rounded-xl p-6">
-          <h2 className="text-lg font-semibold text-white mb-6 flex items-center">
-            <BiPackage className="w-5 h-5 mr-2 text-accent-500" />
-            Build Configuration
-          </h2>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <div>
-              <label className="text-xs font-medium text-forge-400 uppercase tracking-wider">
-                Install Command
-              </label>
-              <div className="mt-2 bg-forge-900/50 border border-forge-700/50 rounded-lg p-3">
-                <code className="text-sm text-emerald-400 font-mono">
-                  {project.installCmd}
-                </code>
+        <Accordion>
+          <AccordionItem
+            key="1"
+            aria-label="Accordion 1"
+            title="Build Configuration"
+            className="bg-forge-800/50 backdrop-blur-sm border border-forge-700/50 rounded-xl p-6"
+            startContent={
+              <BiPackage className="w-5 h-5 mr-2 text-accent-500" />
+            }
+            classNames={{
+              title: ["text-lg font-semibold text-white flex items-center"],
+              base: ["p-6"],
+              trigger: ["p-0"],
+            }}
+          >
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              <div>
+                <label className="text-xs font-medium text-forge-400 uppercase tracking-wider">
+                  Install Command
+                </label>
+                <div className="mt-2 bg-forge-900/50 border border-forge-700/50 rounded-lg p-3">
+                  <code className="text-sm text-emerald-400 font-mono">
+                    {project.installCmd}
+                  </code>
+                </div>
+              </div>
+              <div>
+                <label className="text-xs font-medium text-forge-400 uppercase tracking-wider">
+                  Build Command
+                </label>
+                <div className="mt-2 bg-forge-900/50 border border-forge-700/50 rounded-lg p-3">
+                  <code className="text-sm text-emerald-400 font-mono">
+                    {project.buildCmd}
+                  </code>
+                </div>
+              </div>
+              <div>
+                <label className="text-xs font-medium text-forge-400 uppercase tracking-wider">
+                  Start Command
+                </label>
+                <div className="mt-2 bg-forge-900/50 border border-forge-700/50 rounded-lg p-3">
+                  <code className="text-sm text-emerald-400 font-mono">
+                    {project.runCmd}
+                  </code>
+                </div>
               </div>
             </div>
-            <div>
-              <label className="text-xs font-medium text-forge-400 uppercase tracking-wider">
-                Build Command
-              </label>
-              <div className="mt-2 bg-forge-900/50 border border-forge-700/50 rounded-lg p-3">
-                <code className="text-sm text-emerald-400 font-mono">
-                  {project.buildCmd}
-                </code>
+            {project.envs && (
+              <div className="mt-6">
+                <label className="text-xs font-medium text-forge-400 uppercase tracking-wider">
+                  Environment Variables
+                </label>
+                <div className="mt-2 bg-forge-900/50 border border-forge-700/50 rounded-lg p-3">
+                  <code className="text-sm text-emerald-400 font-mono">
+                    {project.envs}
+                  </code>
+                </div>
               </div>
-            </div>
-            <div>
-              <label className="text-xs font-medium text-forge-400 uppercase tracking-wider">
-                Start Command
-              </label>
-              <div className="mt-2 bg-forge-900/50 border border-forge-700/50 rounded-lg p-3">
-                <code className="text-sm text-emerald-400 font-mono">
-                  {project.runCmd}
-                </code>
-              </div>
-            </div>
-          </div>
-          {project.envs && (
-            <div className="mt-6">
-              <label className="text-xs font-medium text-forge-400 uppercase tracking-wider">
-                Environment Variables
-              </label>
-              <div className="mt-2 bg-forge-900/50 border border-forge-700/50 rounded-lg p-3">
-                <code className="text-sm text-emerald-400 font-mono">
-                  {project.envs}
-                </code>
-              </div>
-            </div>
-          )}
-        </div>
+            )}
+          </AccordionItem>
+        </Accordion>
+
         <div className="mt-6 flex items-center justify-between">
           <div>
             <label className="text-sm font-medium text-white">
@@ -194,6 +213,7 @@ function ProjectDetailsPage() {
             />
           )}
         </div>
+
         {/* Deployments Section */}
         <div className="space-y-6">
           <div className="flex items-center justify-between">
@@ -242,7 +262,7 @@ function ProjectDetailsPage() {
                   className="group block bg-forge-800/50 backdrop-blur-sm border border-forge-700/50 hover:border-accent-500/50 rounded-xl p-6 transition-all duration-200 hover:bg-forge-800/70"
                 >
                   <div className="flex items-center justify-between">
-                    <div className="flex items-center space-x-4">
+                    <div className="flex items-center space-x-4 w-[95%]">
                       <div className="flex items-center space-x-2">
                         {getStatusIcon(deployment.status)}
                         <span
@@ -251,14 +271,14 @@ function ProjectDetailsPage() {
                           {deployment.status}
                         </span>
                       </div>
-                      <div className="space-y-1">
+                      <div className="space-y-1 w-[70%]">
                         <div className="font-medium text-white group-hover:text-accent-300 transition-colors">
                           {deployment.commitMessage}
                         </div>
-                        <div className="flex items-center space-x-4 text-sm text-forge-400">
+                        <div className="flex flex-col md:flex-row md:items-center md:space-x-4 text-sm text-forge-400 max-w-[78%]">
                           <div className="flex items-center">
                             <BiHash className="w-3 h-3 mr-1 text-emerald-400" />
-                            <span className="font-mono">
+                            <span className="font-mono truncate max-w-full md:w-fit">
                               {deployment.commitHash}
                             </span>
                           </div>
@@ -278,7 +298,7 @@ function ProjectDetailsPage() {
         </div>
 
         {/* Quick Stats */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div className="grid grid-cols-2 md:grid-cols-3 gap-6">
           <div className="bg-forge-800/50 backdrop-blur-sm border border-forge-700/50 rounded-xl p-6 text-center">
             <div className="text-2xl font-bold text-white mb-1">
               {project.deployments.length}

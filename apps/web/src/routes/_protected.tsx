@@ -13,8 +13,6 @@ export default function Home() {
 
   useEffect(() => {
     if (isPending) return;
-    console.log({ isPending, data });
-
     if (!data) {
       navigate({ to: "/auth" });
       return;
@@ -22,9 +20,9 @@ export default function Home() {
   }, [isPending]);
 
   return (
-    <>
+    <main className="min-h-screen flex flex-col">
       <Header />
       <Outlet />
-    </>
+    </main>
   );
 }

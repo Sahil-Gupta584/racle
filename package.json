@@ -3,7 +3,8 @@
   "private": true,
   "scripts": {
     "build": "npm run db:generate && turbo run build",
-    "dev": "turbo run dev",
+    "tsc:watch": "concurrently -n trpc,lib -c cyan,magenta \"npm run tsc --workspace=@repo/trpc\" \"npm run tsc --workspace=@repo/lib\"",
+    "dev": "concurrently \"turbo run dev\" \"npm run tsc:watch\"",
     "lint": "turbo run lint",
     "format": "prettier . --write ",
     "format:check": "npx prettier --check .",

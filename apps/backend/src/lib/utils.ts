@@ -1,11 +1,11 @@
 import { prisma } from "@repo/database";
+import { uploadFileToS3 } from "@repo/lib/aws";
 import { spawn } from "child_process";
 import fs from "fs";
 import fsPromise from "fs/promises";
 import path from "path";
 import simpleGit from "simple-git";
 import stripAnsi from "strip-ansi";
-import { uploadFileToS3 } from "./aws";
 import { clearLiveLogs, initLiveLogs } from "./liveLogsMap";
 import { deleteLogStream, getOrCreateLogStream } from "./logStream";
 
@@ -37,7 +37,7 @@ export async function verifySignature(secret: string, header: string, payload) {
     keyBytes,
     algorithm,
     extractable,
-    ["sign", "verify"],
+    ["sign", "verify"]
   );
 
   let sigBytes = hexToBytes(sigHex);
@@ -46,7 +46,7 @@ export async function verifySignature(secret: string, header: string, payload) {
     algorithm.name,
     key,
     sigBytes,
-    dataBytes,
+    dataBytes
   );
 
   return equal;
@@ -73,13 +73,14 @@ async function removeProjectDir(projectPath: string) {
     force: true,
   });
 }
+
 export async function buildAndDeployProject(
   deploymentId: string,
-  projectId: string,
+  projectId: string
 ) {
   const projectPath = path.resolve("../../buildFolder", projectId);
   try {
-    console.log("Started Deploying", deploymentId);
+    console.log("Started Building", deploymentId);
 
     const logs = initLiveLogs(deploymentId); // ✅ call before logging
     const emitter = getOrCreateLogStream(deploymentId);
@@ -160,30 +161,39 @@ export async function buildAndDeployProject(
           });
           return reject(new Error("Build failed"));
         }
+        resolve("Completed Build");
       });
     });
+    console.log("Build completed", deploymentId);
+    log(`End`);
 
     //remove project src directory
+    console.log("src dire", path.join(projectPath, "src"));
+
     await fsPromise.rm(path.join(projectPath, "src"), {
       recursive: true,
       force: true,
     });
-    //remove project directory
-    await removeProjectDir(projectPath);
+    console.log("Deploying", deploymentId);
+
     //upload build files to s3
     const allFiles = getAllFiles(path.join(projectPath, "dist"));
     for (const file of allFiles) {
       await uploadFileToS3(
         deployment.projectId + file.slice(projectPath.length + 5),
-        file,
+        file
       );
     }
+
+    //remove project directory
+    await removeProjectDir(projectPath);
 
     //save logs to db
     await prisma.deployments.update({
       where: { id: deploymentId },
       data: {
         logs: logs.join("\n"),
+        status: "Ready",
       },
     });
 

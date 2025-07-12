@@ -15,11 +15,7 @@ export default function RouteComponent() {
 
   useEffect(() => {
     if (isPending) return;
-
-    console.log({ user: data, outside: true, isPending });
     if (data?.user.id) {
-      console.log({ user: data.user, isPending });
-
       navigate({ to: "/projects" });
     }
   }, [data?.user, data, navigate, isPending]);
