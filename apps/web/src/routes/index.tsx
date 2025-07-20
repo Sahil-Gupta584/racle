@@ -1,4 +1,5 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
+import { useEffect } from "react";
 import {
   BiBarChart,
   BiCode,
@@ -12,12 +13,25 @@ import { FaCheckCircle } from "react-icons/fa";
 import { FaArrowRight } from "react-icons/fa6";
 import { FiZap } from "react-icons/fi";
 import { GiSparkles } from "react-icons/gi";
+import z from "zod";
 
 export const Route = createFileRoute("/")({
   component: LandingPage,
+  validateSearch: z.object({
+    redirectTo: z.string().optional(),
+  }),
 });
 
 function LandingPage() {
+  const search = Route.useSearch();
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (search.redirectTo) {
+      navigate({ to: search.redirectTo });
+    }
+  }, [search, navigate]);
+
   return (
     <div className="grow bg-gradient-to-br from-forge-950 via-forge-900 to-accent-950">
       {/* Navigation */}

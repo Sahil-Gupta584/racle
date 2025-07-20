@@ -33,7 +33,8 @@ export default function RouteComponent() {
           onPress={async () => {
             await signIn.social({
               provider: "google",
-              callbackURL: import.meta.env.VITE_WEB_BASE_URL + "/projects",
+              callbackURL:
+                import.meta.env.VITE_WEB_BASE_URL + "?redirectTo=/projects",
             });
           }}
         >
