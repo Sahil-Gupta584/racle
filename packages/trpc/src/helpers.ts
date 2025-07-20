@@ -57,7 +57,7 @@ export async function getLatestCommitInfo(repoUrl: string) {
 export async function createSubdomain(subDomainName: string) {
   try {
     const response = await fetch(
-      `https://api.cloudflare.com/client/v4/zones/${env.ZONE_ID}/dns_records`,
+      `https://api.cloudflare.com/client/v4/zones/${env.CLOUDFLARE_ZONE_ID}/dns_records`,
 
       {
         method: "post",

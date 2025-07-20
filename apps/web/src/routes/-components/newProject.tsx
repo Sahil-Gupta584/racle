@@ -8,6 +8,7 @@ import {
   ModalContent,
   ModalFooter,
   ModalHeader,
+  Snippet,
   Textarea,
   useDisclosure,
 } from "@heroui/react";
@@ -32,6 +33,7 @@ export default function NewProject() {
   const {
     register,
     handleSubmit,
+    setValue,
     formState: { isSubmitting },
   } = useForm<TProject>({
     defaultValues: {
@@ -40,6 +42,18 @@ export default function NewProject() {
       runCmd: "npm run start",
     },
   });
+
+  const demoRepoUrl = "https://github.com/Sahil-Gupta584/vite-template";
+
+  const copyDemoRepo = async () => {
+    try {
+      await navigator.clipboard.writeText(demoRepoUrl);
+      setValue("repositoryUrl", demoRepoUrl);
+      // You could add a toast notification here if you have one
+    } catch (err) {
+      console.error("Failed to copy: ", err);
+    }
+  };
 
   async function onSubmit(formDataRaw: TProject) {
     try {
@@ -50,7 +64,7 @@ export default function NewProject() {
       if (res.error) throw res.error;
       if (!res.result) throw new Error("Failed to create project");
       const triggerDeploymentRes = await fetch(
-        `${import.meta.env.VITE_BACKEND_URL}/trigger-deploy?deploymentId=${res.result.deployment.id}`,
+        `${import.meta.env.VITE_BACKEND_URL}/trigger-deploy?deploymentId=${res.result.deployment.id}`
       );
       const result = await triggerDeploymentRes.json();
       if (!result.ok) throw new Error("Failed to trigger deployment");
@@ -82,6 +96,7 @@ export default function NewProject() {
         className="bg-gradient-to-br from-forge-950 via-forge-900 to-forge-950 w-fit"
         backdrop="blur"
         isDismissable={false}
+        size="2xl"
       >
         <ModalContent>
           {(onClose) => (
@@ -90,21 +105,37 @@ export default function NewProject() {
                 New Project
               </ModalHeader>
               <ModalBody>
-                <div className="flex justify-between items-center gap-2">
-                  <Input
-                    startContent={<BsGithub />}
-                    placeholder="Paste URL of a repo here"
-                    label="Repository"
-                    variant="bordered"
-                    {...register("repositoryUrl")}
-                  />
-                  <Input
-                    startContent={<BiCode />}
-                    placeholder="Enter project name here"
-                    label="Project Name"
-                    variant="bordered"
-                    {...register("name")}
-                  />
+                <div className="space-y-3">
+                  <div className="flex items-center justify-between p-3 bg-blue-500/10 border border-blue-500/20 rounded-lg wh">
+                    <div className="flex items-center gap-2">
+                      <BsGithub className="w-4 h-4 text-blue-400" />
+                      <span className="text-sm text-blue-200 ">Demo Repo:</span>
+                    </div>
+                    <Snippet
+                      hideSymbol={true}
+                      className="text-xs text-blue-300 bg-blue-500/20 w-fit whitespace-break-spaces"
+                      classNames={{ pre: ["truncate whitespace-pre-wrap"] }}
+                    >
+                      {demoRepoUrl}
+                    </Snippet>
+                  </div>
+
+                  <div className="flex justify-between items-center gap-2">
+                    <Input
+                      startContent={<BsGithub />}
+                      placeholder="Paste URL of a repo here"
+                      label="Repository"
+                      variant="bordered"
+                      {...register("repositoryUrl")}
+                    />
+                    <Input
+                      startContent={<BiCode />}
+                      placeholder="Enter project name here"
+                      label="Project Name"
+                      variant="bordered"
+                      {...register("name")}
+                    />
+                  </div>
                 </div>
                 <Input
                   endContent={

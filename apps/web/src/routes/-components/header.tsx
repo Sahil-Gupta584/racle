@@ -23,6 +23,7 @@ export default function Header() {
 
   const truncateId = (id: string) => id.slice(0, 6) + "...";
 
+  
   return (
     <nav className="top-0 w-full z-50 bg-forge-950/90 backdrop-blur-xl border-b border-forge-800/50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
