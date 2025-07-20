@@ -33,7 +33,6 @@ export default function NewProject() {
   const {
     register,
     handleSubmit,
-    setValue,
     formState: { isSubmitting },
   } = useForm<TProject>({
     defaultValues: {
@@ -42,18 +41,6 @@ export default function NewProject() {
       runCmd: "npm run start",
     },
   });
-
-  const demoRepoUrl = "https://github.com/Sahil-Gupta584/vite-template";
-
-  const copyDemoRepo = async () => {
-    try {
-      await navigator.clipboard.writeText(demoRepoUrl);
-      setValue("repositoryUrl", demoRepoUrl);
-      // You could add a toast notification here if you have one
-    } catch (err) {
-      console.error("Failed to copy: ", err);
-    }
-  };
 
   async function onSubmit(formDataRaw: TProject) {
     try {
@@ -116,7 +103,7 @@ export default function NewProject() {
                       className="text-xs text-blue-300 bg-blue-500/20 w-fit whitespace-break-spaces"
                       classNames={{ pre: ["truncate whitespace-pre-wrap"] }}
                     >
-                      {demoRepoUrl}
+                      https://github.com/Sahil-Gupta584/vite-template
                     </Snippet>
                   </div>
 
