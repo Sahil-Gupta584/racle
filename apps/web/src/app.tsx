@@ -41,7 +41,7 @@ export function App() {
       <backend.Provider client={trpcClient} queryClient={queryClient}>
         <QueryClientProvider client={queryClient}>
           <ToastProvider placement="top-center" />
-
+          {/* <Analytics /> */}
           <RouterProvider router={router} />
         </QueryClientProvider>
       </backend.Provider>
