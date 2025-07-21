@@ -26,7 +26,7 @@ const envSchema = z.object({
   CLOUDFLARE_API_KEY: z.string().min(1),
   CLOUDFLARE_EMAIL: z.string().email(),
   CLOUDFLARE_ZONE_ID: z.string().length(32, "Expected 32-character Zone ID"),
-  BACKEND_IP: z.string().min(1),
+  BACKEND_IP: z.string().min(1).optional(),
 
   BETTER_AUTH_SECRET: z.string().min(1),
   DATABASE_URL: z.string().min(1),

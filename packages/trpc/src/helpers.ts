@@ -67,11 +67,10 @@ export async function createSubdomain(subDomainName: string) {
           "X-Auth-Key": env.CLOUDFLARE_API_KEY,
         },
         body: JSON.stringify({
-          name: subDomainName, // subdomain or domain
-          type: "A", // or CNAME
-          content: env.BACKEND_IP, // IP or hostname
+          name: subDomainName,
+          type: "CNAME",
+          content: env.BACKEND_IP || "racle.onrender.com",
           ttl: 3600,
-          // comment: "Domain verification record",
           proxied: true,
         }),
       }
