@@ -12,13 +12,12 @@ import {
   Textarea,
   useDisclosure,
 } from "@heroui/react";
-import { backend } from "@repo/trpc/react";
+import { backend, type TBackendInput } from "@repo/trpc/react";
 import { zodSchemas } from "@repo/trpc/zodSchemas";
 import { useNavigate } from "@tanstack/react-router";
 import { useForm } from "react-hook-form";
 import { BiCode, BiGlobe, BiPlus } from "react-icons/bi";
 import { BsGithub } from "react-icons/bs";
-import { z } from "zod";
 import { useSession } from "../../lib/auth";
 import { trpcErrorHandler } from "../../lib/utils";
 
@@ -27,14 +26,14 @@ export default function NewProject() {
 
   const { data } = useSession();
   const navigate = useNavigate();
-  type TProject = z.infer<typeof zodSchemas.projects.create>;
+  type TCreateProject = TBackendInput["projects"]["create"];
   const createProjectMutation = backend.projects.create.useMutation();
   const createDeploymentMutation = backend.deployment.create.useMutation();
   const {
     register,
     handleSubmit,
     formState: { isSubmitting },
-  } = useForm<TProject>({
+  } = useForm<TCreateProject>({
     defaultValues: {
       installCmd: "npm install",
       buildCmd: "npm run build",
@@ -42,7 +41,7 @@ export default function NewProject() {
     },
   });
 
-  async function onSubmit(formDataRaw: TProject) {
+  async function onSubmit(formDataRaw: TCreateProject) {
     try {
       if (!data?.user.id) return;
       formDataRaw.userId = data?.user.id;
