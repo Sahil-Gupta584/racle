@@ -1,7 +1,6 @@
 import { Octokit } from "@octokit/rest";
 import { prisma } from "@repo/database";
 
-import { env } from "@repo/lib/envs";
 import {
   backendRes,
   createSubdomain,
@@ -70,13 +69,11 @@ export const projectsRouter = trpcRouter({
             if (!webhook_secret)
               throw new Error("Github webhook secret not found");
 
-            if (!env.VITE_BACKEND_URL.includes("localhost")) {
-              const createSubdomainRes = await createSubdomain(
-                input.domainName
-              );
-              if (!createSubdomainRes.success)
-                throw new Error("Failed to create subdomain");
-            }
+            // if (!env.VITE_BACKEND_URL.includes("localhost")) {
+            const createSubdomainRes = await createSubdomain(input.domainName);
+            if (!createSubdomainRes.success)
+              throw new Error("Failed to create subdomain");
+            // }
             // await octokit.repos.deleteWebhook({
             //   hook_id: 557633245,
             //   owner: parsedData.owner,

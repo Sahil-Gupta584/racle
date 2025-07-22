@@ -68,7 +68,7 @@ export async function createSubdomain(subDomainName: string) {
         },
         body: JSON.stringify({
           name: subDomainName,
-          type: "CNAME",
+          type: env.BACKEND_IP ? "A" : "CNAME",
           content: env.BACKEND_IP || "racle.onrender.com",
           ttl: 3600,
           proxied: true,

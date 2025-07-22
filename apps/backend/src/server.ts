@@ -195,10 +195,10 @@ app.get("{*any}", async (req, res) => {
       res.send(fileBody.Body);
     }
   } catch (error) {
-    console.log("Error to server project", error);
-    res.send("Error to server project");
+    console.log("Error to serve project", error);
+    res.send("Error to serve project");
   }
 });
 
 const PORT = env.PORT;
-app.listen(PORT, () => console.log("server listening on ", PORT));
+app.listen(PORT, "0.0.0.0", () => console.log("server listening on ", PORT));
