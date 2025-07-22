@@ -102,6 +102,8 @@ export const projectsRouter = trpcRouter({
             hookId = res.data.id;
           }
         }
+        const commitInfo = await getLatestCommitInfo(input.repositoryUrl);
+        if (!commitInfo) throw new Error("Failed to fetch latest commit hash");
 
         const project = await prisma.projects.create({
           data: {
@@ -117,9 +119,6 @@ export const projectsRouter = trpcRouter({
             hookId,
           },
         });
-
-        const commitInfo = await getLatestCommitInfo(project.repositoryUrl);
-        if (!commitInfo) throw new Error("Failed to fetch latest commit hash");
 
         const deployment = await prisma.deployments.create({
           data: {

@@ -92,15 +92,17 @@ export default function NewProject() {
               </ModalHeader>
               <ModalBody>
                 <div className="space-y-3">
-                  <div className="flex items-center justify-between p-3 bg-blue-500/10 border border-blue-500/20 rounded-lg wh">
+                  <div className="flex items-center justify-between gap-2 p-3 bg-blue-500/10 border border-blue-500/20 rounded-lg wh">
                     <div className="flex items-center gap-2">
                       <BsGithub className="w-4 h-4 text-blue-400" />
                       <span className="text-sm text-blue-200 ">Demo Repo:</span>
                     </div>
                     <Snippet
                       hideSymbol={true}
-                      className="text-xs text-blue-300 bg-blue-500/20 w-fit whitespace-break-spaces"
-                      classNames={{ pre: ["truncate whitespace-pre-wrap"] }}
+                      className=" text-blue-300 bg-blue-500/20 w-fit whitespace-break-spaces p-0 px-2 text-xs"
+                      classNames={{
+                        pre: ["truncate whitespace-pre-wrap "],
+                      }}
                     >
                       https://github.com/Sahil-Gupta584/vite-template
                     </Snippet>
