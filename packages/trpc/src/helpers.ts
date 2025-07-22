@@ -76,6 +76,28 @@ export async function createSubdomain(subDomainName: string) {
       }
     );
     const result = await response.json();
+    console.log("result", JSON.stringify(result));
+
+    return result;
+  } catch (error) {
+    console.error("Error creating record:", error);
+  }
+}
+export async function deleteSubdomain(dnsRecordId: string) {
+  try {
+    const response = await fetch(
+      `https://api.cloudflare.com/client/v4/zones/${env.CLOUDFLARE_ZONE_ID}/dns_records/${dnsRecordId}`,
+
+      {
+        method: "delete",
+        headers: {
+          "Content-Type": "application/json",
+          "X-Auth-Email": env.CLOUDFLARE_EMAIL,
+          "X-Auth-Key": env.CLOUDFLARE_API_KEY,
+        },
+      }
+    );
+    const result = await response.json();
     return result;
   } catch (error) {
     console.error("Error creating record:", error);

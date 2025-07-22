@@ -16,14 +16,6 @@ enum DeploymentStatus {
   Canceled
 }
 
-// model EnvironmentVariables {
-//   id        String   @id @default(uuid())
-//   key       String
-//   value     String
-//   Project   Projects @relation(fields: [projectId], references: [id])
-//   projectId String
-// }
-
 model Projects {
   id            String        @id @default(uuid())
   user          User          @relation(fields: [userId], references: [id])
@@ -35,6 +27,7 @@ model Projects {
   buildCmd      String
   runCmd        String
   hookId        Int?
+  dnsRecordId   String
   autoDeploy    Boolean
   envs          String?
   createdAt     DateTime      @default(now())
