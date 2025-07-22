@@ -3,6 +3,7 @@ import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useEffect } from "react";
 import { FaGithub } from "react-icons/fa6";
 import { FcGoogle } from "react-icons/fc";
+import { FiZap } from "react-icons/fi";
 import { signIn, useSession } from "../lib/auth";
 
 export const Route = createFileRoute("/auth")({
@@ -21,15 +22,22 @@ export default function RouteComponent() {
   }, [data?.user, data, navigate, isPending]);
 
   return (
-    <div className="min-h-screen flex items-center justify-center px-4">
-      <div className="w-full max-w-md bg-white dark:bg-gray-800 rounded-2xl shadow-lg dark:shadow-md p-8 flex flex-col items-center">
-        <h1 className="text-3xl font-extrabold text-gray-800 dark:text-white mb-6">
-          Login{" "}
+    <div className="min-h-screen flex items-center justify-center px-4 bg-gradient-to-br from-forge-950 via-forge-900 to-accent-950">
+      <div className="w-full max-w-md bg-forge-800/50 backdrop-blur-sm border border-forge-700/50 rounded-2xl shadow-xl p-8 flex flex-col items-center">
+        <div className="w-16 h-16 bg-gradient-to-br from-accent-500 to-accent-600 rounded-xl flex items-center justify-center shadow-lg mb-6">
+          <FiZap className="w-8 h-8 text-white" />
+        </div>
+
+        <h1 className="text-3xl font-extrabold bg-gradient-to-r from-white to-forge-300 bg-clip-text text-transparent mb-6">
+          Welcome to DeployForge
         </h1>
 
+        <p className="text-forge-300 mb-8 text-center">
+          Sign in to deploy, scale, and monitor your applications
+        </p>
+
         <Button
-          variant="bordered"
-          className="flex items-center gap-3 px-6 py-3 text-lg font-medium text-gray-700 dark:text-gray-100 border border-gray-300 dark:border-gray-700 hover:border-indigo-500 dark:hover:border-indigo-400 hover:text-indigo-600 dark:hover:text-indigo-300 transition-all duration-200 ease-in-out"
+          className="w-full flex items-center justify-center gap-3 px-6 py-3 text-lg font-medium text-white bg-gradient-to-r from-accent-800 to-accent-800 hover:from-accent-600 hover:to-accent-700 transition shadow-lg hover:shadow-accent-500/25 rounded-xl"
           onPress={async () => {
             await signIn.social({
               provider: "google",
@@ -41,9 +49,9 @@ export default function RouteComponent() {
           <FcGoogle className="text-2xl" />
           Sign in with Google
         </Button>
+
         <Button
-          variant="bordered"
-          className="mt-4 flex items-center gap-3 px-6 py-3 text-lg font-medium text-gray-700 dark:text-gray-100 border border-gray-300 dark:border-gray-700 hover:border-indigo-500 dark:hover:border-indigo-400 hover:text-indigo-600 dark:hover:text-indigo-300 transition-all duration-200 ease-in-out"
+          className="w-full mt-4 flex items-center justify-center gap-3 px-6 py-3 text-lg font-medium text-white bg-gradient-to-r from-forge-700 to-forge-800 hover:from-forge-600 hover:to-forge-700 border border-forge-600/50 transition-all duration-300 rounded-xl"
           onPress={async () => {
             await signIn.social({
               provider: "github",
@@ -52,11 +60,11 @@ export default function RouteComponent() {
           }}
         >
           <FaGithub className="text-2xl" />
-          Sign in with Google
+          Sign in with GitHub
         </Button>
 
-        <p className="text-sm text-gray-500 dark:text-gray-400 mt-4">
-          Secure login powered by Google OAuth
+        <p className="text-sm text-forge-400 mt-6">
+          Secure login powered by OAuth 2.0
         </p>
       </div>
     </div>

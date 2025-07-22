@@ -40,8 +40,12 @@ export function App() {
     <HeroUIProvider>
       <backend.Provider client={trpcClient} queryClient={queryClient}>
         <QueryClientProvider client={queryClient}>
-          <ToastProvider placement="top-center" />
-          {/* <Analytics /> */}
+          <ToastProvider
+            toastProps={{
+              classNames: { description: "break-all" },
+            }}
+            placement="top-center"
+          />
           <RouterProvider router={router} />
         </QueryClientProvider>
       </backend.Provider>

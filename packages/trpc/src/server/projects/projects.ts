@@ -77,6 +77,16 @@ export const projectsRouter = trpcRouter({
               if (!createSubdomainRes.success)
                 throw new Error("Failed to create subdomain");
             }
+            // await octokit.repos.deleteWebhook({
+            //   hook_id: 557633245,
+            //   owner: parsedData.owner,
+            //   repo: parsedData.repo,
+            // });
+            // const hooksRes = await octokit.repos.listWebhooks({
+            //   owner: parsedData.owner,
+            //   repo: parsedData.repo,
+            // });
+            // console.log({ hooksRes: JSON.stringify(hooksRes.data) });
 
             const res = await octokit.repos.createWebhook({
               owner: parsedData.owner,

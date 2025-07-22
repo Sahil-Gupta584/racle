@@ -40,6 +40,7 @@ export default function DeleteProject({
         onClose();
         navigate({ to: "/projects" });
       }
+      if (res.error) throw res.error;
     } catch (error) {
       trpcErrorHandler(error);
     }
