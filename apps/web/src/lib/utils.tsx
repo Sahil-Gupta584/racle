@@ -110,8 +110,11 @@ export const getStatusColor = (status: string) => {
 };
 
 export function getProjectUrl(domainName: string) {
-  if (!import.meta.env.DEV) {
+  if (
+    !import.meta.env.VITE_BACKEND_URL &&
+    import.meta.env.VITE_BACKEND_URL.includes("localhost")
+  ) {
     return `http://${domainName}.localhost:3000`; // Or whatever your local dev server uses
   }
-  return `https://${domainName}.racle.xyz`;
+  return `https://${domainName}.syncmate.xyz`;
 }
