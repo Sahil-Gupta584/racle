@@ -2,7 +2,9 @@ import fs from "fs";
 
 import {
   DeleteObjectCommand,
+  DeleteObjectsCommand,
   GetObjectCommand,
+  ListObjectsV2Command,
   PutObjectCommand,
   S3Client,
 } from "@aws-sdk/client-s3";
@@ -68,3 +70,43 @@ export async function getContent(id: string, filePath: string) {
     })
   );
 }
+
+export async function deleteAllObjectsFromS3() {
+  try {
+    // Step 1: List all objects
+    console.log("started");
+
+    const listResponse = await s3.send(
+      new ListObjectsV2Command({
+        Bucket: bucketName,
+      })
+    );
+
+    const contents = listResponse.Contents;
+
+    if (!contents || contents.length === 0) {
+      console.log("No objects found in the bucket.");
+      return;
+    }
+
+    // Step 2: Prepare objects for deletion
+    const objectsToDelete = contents.map((obj) => ({ Key: obj.Key! }));
+
+    // Step 3: Send batch delete request
+    await s3.send(
+      new DeleteObjectsCommand({
+        Bucket: bucketName,
+        Delete: {
+          Objects: objectsToDelete,
+          Quiet: false,
+        },
+      })
+    );
+
+    console.log("All objects deleted successfully.");
+  } catch (error) {
+    console.error("Failed to delete all objects:", error);
+  }
+}
+
+// deleteAllObjectsFromS3();

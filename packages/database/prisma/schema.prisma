@@ -27,7 +27,6 @@ model Projects {
   buildCmd      String
   runCmd        String
   hookId        Int?
-  dnsRecordId   String
   autoDeploy    Boolean
   envs          String?
   createdAt     DateTime      @default(now())

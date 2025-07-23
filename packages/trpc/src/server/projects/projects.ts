@@ -1,11 +1,8 @@
 import { Octokit } from "@octokit/rest";
 import { prisma } from "@repo/database";
 
-import { env } from "@repo/lib/envs";
 import {
   backendRes,
-  createSubdomain,
-  deleteSubdomain,
   getLatestCommitInfo,
   parseGitHubRepoUrl,
   webhook_secret,
@@ -55,7 +52,6 @@ export const projectsRouter = trpcRouter({
         });
 
         let hookId: number | null = null;
-        let dnsRecordId: string | null = null;
         if (account) {
           const octokit = new Octokit({
             auth: account.accessToken,
@@ -72,17 +68,8 @@ export const projectsRouter = trpcRouter({
             if (!webhook_secret)
               throw new Error("Github webhook secret not found");
 
-            if (!env.VITE_BACKEND_URL.includes("localhost")) {
-              const createSubdomainRes = await createSubdomain(
-                input.domainName
-              );
-              if (!createSubdomainRes.success && createSubdomainRes.result.id)
-                throw new Error("Failed to create subdomain");
-
-              dnsRecordId = createSubdomainRes.result.id;
-            }
             // await octokit.repos.deleteWebhook({
-            //   hook_id: 557633245,
+            //   hook_id: 559629519,
             //   owner: parsedData.owner,
             //   repo: parsedData.repo,
             // });
@@ -109,8 +96,6 @@ export const projectsRouter = trpcRouter({
         const commitInfo = await getLatestCommitInfo(input.repositoryUrl);
         if (!commitInfo) throw new Error("Failed to fetch latest commit hash");
 
-        if (!dnsRecordId) throw new Error("Failed to create subdomain");
-
         const project = await prisma.projects.create({
           data: {
             name: input.name,
@@ -123,7 +108,6 @@ export const projectsRouter = trpcRouter({
             domainName: input.domainName,
             autoDeploy: !!account,
             hookId,
-            dnsRecordId,
           },
         });
 
@@ -198,13 +182,6 @@ export const projectsRouter = trpcRouter({
             repo: parsedData.repo,
           });
         }
-
-        const deleteSubdomainRes = await deleteSubdomain(
-          isProjectExist.dnsRecordId
-        );
-        if (!deleteSubdomainRes.success)
-          throw new Error("Failed to delete subdomain");
-
         const project = await prisma.projects.delete({
           where: {
             id: input.projectId,
