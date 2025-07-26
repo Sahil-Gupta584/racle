@@ -1,0 +1,7 @@
+kind: ConfigMap
+apiVersion: v1
+metadata:
+  name: racle-web-ConfigMap
+data:
+  VITE_BACKEND_URL: http://localhost:3000
+  VITE_WEB_BASE_URL: http://localhost:5173

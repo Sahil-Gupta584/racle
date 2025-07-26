@@ -68,16 +68,20 @@ export const projectsRouter = trpcRouter({
             if (!webhook_secret)
               throw new Error("Github webhook secret not found");
 
-            // await octokit.repos.deleteWebhook({
-            //   hook_id: 559629519,
-            //   owner: parsedData.owner,
-            //   repo: parsedData.repo,
-            // });
-            // const hooksRes = await octokit.repos.listWebhooks({
-            //   owner: parsedData.owner,
-            //   repo: parsedData.repo,
-            // });
-            // console.log({ hooksRes: JSON.stringify(hooksRes.data) });
+            const commitInfo = await getLatestCommitInfo(input.repositoryUrl);
+            if (!commitInfo)
+              throw new Error("Failed to fetch latest commit hash");
+
+            await octokit.repos.deleteWebhook({
+              hook_id: 559629519,
+              owner: parsedData.owner,
+              repo: parsedData.repo,
+            });
+            const hooksRes = await octokit.repos.listWebhooks({
+              owner: parsedData.owner,
+              repo: parsedData.repo,
+            });
+            console.log({ hooksRes: JSON.stringify(hooksRes.data) });
 
             const res = await octokit.repos.createWebhook({
               owner: parsedData.owner,
@@ -93,8 +97,6 @@ export const projectsRouter = trpcRouter({
             hookId = res.data.id;
           }
         }
-        const commitInfo = await getLatestCommitInfo(input.repositoryUrl);
-        if (!commitInfo) throw new Error("Failed to fetch latest commit hash");
 
         const project = await prisma.projects.create({
           data: {
