@@ -52,6 +52,9 @@ export const projectsRouter = trpcRouter({
         });
 
         let hookId: number | null = null;
+        const commitInfo = await getLatestCommitInfo(input.repositoryUrl);
+        if (!commitInfo) throw new Error("Failed to fetch latest commit hash");
+
         if (account) {
           const octokit = new Octokit({
             auth: account.accessToken,
@@ -67,10 +70,6 @@ export const projectsRouter = trpcRouter({
           if (repo.data.permissions?.admin) {
             if (!webhook_secret)
               throw new Error("Github webhook secret not found");
-
-            const commitInfo = await getLatestCommitInfo(input.repositoryUrl);
-            if (!commitInfo)
-              throw new Error("Failed to fetch latest commit hash");
 
             await octokit.repos.deleteWebhook({
               hook_id: 559629519,
