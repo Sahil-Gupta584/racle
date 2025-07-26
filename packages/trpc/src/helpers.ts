@@ -39,8 +39,12 @@ export async function getLatestCommitInfo(repoUrl: string) {
     const res = await fetch(
       `https://api.github.com/repos/${parsed.owner}/${parsed.repo}/commits`
     );
+    console.log({ ok: res.ok });
 
-    if (!res.ok) return null;
+    if (!res.ok) {
+      const commitss = await res.json();
+      console.log({ commitss });
+    }
 
     const commits = await res.json();
     console.log({ commits });
@@ -52,5 +56,6 @@ export async function getLatestCommitInfo(repoUrl: string) {
     };
   } catch (error) {
     console.log("Failed to get commit info", error);
+    throw error;
   }
 }
