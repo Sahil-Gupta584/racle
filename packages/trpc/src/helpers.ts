@@ -42,8 +42,8 @@ export async function getLatestCommitInfo(repoUrl: string) {
     console.log({ ok: res.ok });
 
     if (!res.ok) {
-      const commitss = await res.json();
-      console.log({ commitss });
+      const errors = await res.json();
+      console.log({ errors });
     }
 
     const commits = await res.json();

@@ -71,16 +71,16 @@ export const projectsRouter = trpcRouter({
             if (!webhook_secret)
               throw new Error("Github webhook secret not found");
 
-            await octokit.repos.deleteWebhook({
-              hook_id: 559629519,
-              owner: parsedData.owner,
-              repo: parsedData.repo,
-            });
-            const hooksRes = await octokit.repos.listWebhooks({
-              owner: parsedData.owner,
-              repo: parsedData.repo,
-            });
-            console.log({ hooksRes: JSON.stringify(hooksRes.data) });
+            // await octokit.repos.deleteWebhook({
+            //   hook_id: 560313287,
+            //   owner: parsedData.owner,
+            //   repo: parsedData.repo,
+            // });
+            // const hooksRes = await octokit.repos.listWebhooks({
+            //   owner: parsedData.owner,
+            //   repo: parsedData.repo,
+            // });
+            // console.log({ hooksRes: JSON.stringify(hooksRes.data) });
 
             const res = await octokit.repos.createWebhook({
               owner: parsedData.owner,
