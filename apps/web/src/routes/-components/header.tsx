@@ -72,7 +72,7 @@ export default function Header() {
             )}
           </div>
 
-          <div className="flex flex-col gap-2 md:flex-row md:items-center space-x-4">
+          <div className="flex flex-col-reverse items-end gap-2 md:flex-row md:items-center space-x-4">
             <NewProject />
             {user && (
               <Dropdown
