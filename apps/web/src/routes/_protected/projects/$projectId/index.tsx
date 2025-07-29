@@ -251,7 +251,8 @@ function ProjectDetailsPage() {
             </div>
           ) : (
             <div className="space-y-4">
-              {project.deployments.map((deployment) => (
+              {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
+              {project.deployments.map((deployment: any) => (
                 <Link
                   key={deployment.id}
                   to="/projects/$projectId/deployment/$deploymentId"
@@ -307,13 +308,21 @@ function ProjectDetailsPage() {
           </div>
           <div className="bg-forge-800/50 backdrop-blur-sm border border-forge-700/50 rounded-xl p-6 text-center">
             <div className="text-2xl font-bold text-emerald-400 mb-1">
-              {project.deployments.filter((d) => d.status === "Ready").length}
+              {
+                project.deployments.filter(
+                  (d: { status: string }) => d.status === "Ready"
+                ).length
+              }
             </div>
             <div className="text-sm text-forge-400">Successful</div>
           </div>
           <div className="bg-forge-800/50 backdrop-blur-sm border border-forge-700/50 rounded-xl p-6 text-center">
             <div className="text-2xl font-bold text-amber-400 mb-1">
-              {project.deployments.filter((d) => d.status === "Error").length}
+              {
+                project.deployments.filter(
+                  (d: { status: string }) => d.status === "Error"
+                ).length
+              }
             </div>
             <div className="text-sm text-forge-400">Failed</div>
           </div>

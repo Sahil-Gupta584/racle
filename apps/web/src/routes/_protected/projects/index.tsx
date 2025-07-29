@@ -68,7 +68,7 @@ function Projects() {
                 </p>
                 <p className="text-2xl font-bold text-white mt-1">
                   {data.result.reduce(
-                    (acc, p: TProject) => acc + p._count.deployments,
+                    (acc: number, p: TProject) => acc + p._count.deployments,
                     0
                   )}
                 </p>

@@ -1,0 +1,25 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: racle-db-service
+spec:
+  selector:
+    app: db
+  ports:
+    - protocol: TCP
+      port: 5432
+      targetPort: 5432
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: racle-backend-service
+spec:
+  selector:
+    app: racle-backend
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 80
+  type: LoadBalancer

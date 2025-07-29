@@ -152,7 +152,9 @@ app.post(
     }
   })
 );
-
+app.get("/", (req, res) => {
+  res.send("hi");
+});
 app.get("{*any}", async (req, res) => {
   try {
     const host = req.hostname;
@@ -201,4 +203,8 @@ app.get("{*any}", async (req, res) => {
 });
 
 const PORT = env.PORT;
-app.listen(PORT, "0.0.0.0", () => console.log("server listening on ", PORT));
+app.listen(PORT, "0.0.0.0", () => {
+  console.log({ envs: JSON.stringify(env) });
+
+  console.log("server listening on ", PORT);
+});

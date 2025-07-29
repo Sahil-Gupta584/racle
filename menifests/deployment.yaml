@@ -1,0 +1,56 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: racle-backend-deployment
+  labels:
+    app: racle-backend
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: racle-backend
+  template:
+    metadata:
+      name: racle-backend
+      labels:
+        app: racle-backend
+    spec:
+      containers:
+        - name: racle-backend
+          image: sahilg99/racle-backend
+          # command: ["sleep", "infinity"]
+          ports:
+            - containerPort: 80
+          volumeMounts:
+            - name: backend-env-volume
+              mountPath: "/app/secret/"
+      volumes:
+        - name: backend-env-volume
+          secret:
+            secretName: backend-secret
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: db-deployment
+  labels:
+    app: db
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: db
+  template:
+    metadata:
+      name: db
+      labels:
+        app: db
+    spec:
+      containers:
+        - name: db
+          image: postgres
+          ports:
+            - containerPort: 5432
+          env:
+            - name: POSTGRES_PASSWORD
+              value: postgres
