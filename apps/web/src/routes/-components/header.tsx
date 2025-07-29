@@ -26,8 +26,8 @@ export default function Header() {
   return (
     <nav className="top-0 w-full z-50 bg-forge-950/90 backdrop-blur-xl border-b border-forge-800/50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between h-16">
-          <div className="flex items-center space-x-4">
+        <div className="flex items-center justify-between ">
+          <div className="flex md:flex-row flex-col md:items-center items-baseline md:space-x-4 mt-2 md:h-16">
             <Link to="/projects" className="flex items-center space-x-2">
               <div className="w-9 h-9 bg-gradient-to-br from-accent-500 to-accent-600 rounded-xl flex items-center justify-center shadow-lg">
                 <FiZap className="w-5 h-5 text-white" />
@@ -39,8 +39,8 @@ export default function Header() {
 
             {/* Breadcrumb navigation */}
             {params?.projectId && (
-              <div className="flex items-center text-forge-300">
-                <FiChevronRight className="mx-2" />
+              <div className="flex items-center text-forge-300 md:mx-2 my-3">
+                <FiChevronRight />
                 <Link
                   to="/projects/$projectId"
                   params={{ projectId: params.projectId }}
@@ -72,7 +72,7 @@ export default function Header() {
             )}
           </div>
 
-          <div className="flex items-center space-x-4">
+          <div className="flex flex-col gap-2 md:flex-row md:items-center space-x-4">
             <NewProject />
             {user && (
               <Dropdown
