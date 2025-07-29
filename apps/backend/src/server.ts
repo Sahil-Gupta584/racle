@@ -205,5 +205,7 @@ app.get("{*any}", async (req, res) => {
 const PORT = env.PORT;
 app.listen(PORT, "0.0.0.0", () => {
   // console.log({ envs: JSON.stringify(env) });
+  console.log({ pwd: process.cwd() });
+
   console.log("server listening on ", PORT);
 });
