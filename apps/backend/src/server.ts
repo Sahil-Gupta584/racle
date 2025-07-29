@@ -6,6 +6,7 @@ import * as trpcExpress from "@trpc/server/adapters/express";
 import { toNodeHandler } from "better-auth/node";
 import cors from "cors";
 import express from "express";
+import fs from "fs";
 import mime from "mime";
 import { Readable } from "stream";
 import { enqueueBuild } from "./buildWorker";
@@ -204,8 +205,10 @@ app.get("{*any}", async (req, res) => {
 
 const PORT = env.PORT;
 app.listen(PORT, "0.0.0.0", () => {
-  // console.log({ envs: JSON.stringify(env) });
+  console.log({ envs: JSON.stringify(env) });
   console.log({ pwd: process.cwd() });
+  const content = fs.readFileSync("/etc/secrets/.env", "utf8");
+  console.log({ content });
 
   console.log("server listening on ", PORT);
 });

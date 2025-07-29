@@ -1,5 +1,4 @@
 import dotenv from "dotenv";
-import fs from "fs";
 import path from "path";
 import { fileURLToPath } from "url";
 import z from "zod";
@@ -70,9 +69,6 @@ export const parseRes = envSchema.safeParse(process.env);
 // export const parseRes = envSchema.safeParse(dummyEnv);
 
 if (!parseRes.success) {
-  const content = fs.readFileSync("/etc/secrets/.env", "utf8");
-  console.log({ content });
-
   console.error("Environment variables validation failed:", parseRes.error);
   throw new Error("Invalid environment variables");
 }
