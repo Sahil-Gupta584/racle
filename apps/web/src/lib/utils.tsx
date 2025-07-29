@@ -116,5 +116,5 @@ export function getProjectUrl(domainName: string) {
   ) {
     return `http://${domainName}.localhost:3000`; // Or whatever your local dev server uses
   }
-  return `https://${domainName}.syncmate.xyz`;
+  return `https://${domainName}.racle.xyz`;
 }
