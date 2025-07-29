@@ -17,7 +17,7 @@ spec:
     spec:
       containers:
         - name: racle-backend
-          image: sahilg99/racle-backend
+          image: sahilg99/racle-backend:v6
           # command: ["sleep", "infinity"]
           ports:
             - containerPort: 80

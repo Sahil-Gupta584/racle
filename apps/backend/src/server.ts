@@ -152,8 +152,8 @@ app.post(
     }
   })
 );
-app.get("/", (req, res) => {
-  res.send("hi");
+app.get("/status", (req, res) => {
+  res.send("running well");
 });
 app.get("{*any}", async (req, res) => {
   try {
@@ -204,7 +204,6 @@ app.get("{*any}", async (req, res) => {
 
 const PORT = env.PORT;
 app.listen(PORT, "0.0.0.0", () => {
-  console.log({ envs: JSON.stringify(env) });
-
+  // console.log({ envs: JSON.stringify(env) });
   console.log("server listening on ", PORT);
 });

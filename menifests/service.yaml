@@ -1,7 +1,7 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: racle-db-service
+  name: db-service
 spec:
   selector:
     app: db
