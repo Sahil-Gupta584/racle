@@ -61,4 +61,4 @@ spec:
       volumes:
         - name: db-pvc-volume
           persistentVolumeClaim:
-            claimName: db-pvc
+            claimName: pg-pvc

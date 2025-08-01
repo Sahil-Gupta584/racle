@@ -4,18 +4,29 @@ import { BiCheckCircle, BiFilter, BiPackage, BiSearch } from "react-icons/bi";
 import { BsActivity } from "react-icons/bs";
 import { FiZap } from "react-icons/fi";
 import ProjectCard from "../../-components/projectCard";
+import { useSession } from "../../../lib/auth";
 
 export const Route = createFileRoute("/_protected/projects/")({
   component: Projects,
 });
 
 function Projects() {
-  const { data } = backend.projects.getAll.useQuery();
+  const { data: auth } = useSession();
+  const userId = auth?.user.id;
+
+  const { data } = backend.projects.getAll.useQuery(
+    { userId: userId! },
+    {
+      enabled: !!userId,
+    }
+  );
+
+  if (!userId || !data?.result) return "Loading...";
+
   type TProject = NonNullable<
     TBackendOutput["projects"]["getAll"]["result"]
   >[number];
 
-  if (!data?.result) return "Loading...";
   return (
     <div className="grow bg-gradient-to-br from-forge-950 via-forge-900 to-accent-950 text-forge-100">
       <div className="p-8 max-w-7xl mx-auto md:space-y-8 space-y-4">

@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: pg-pv
+spec:
+  capacity:
+    storage: 500Mi
+  accessModes:
+    - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: "" # <- add this
+  gcePersistentDisk:
+    pdName: racle-db-disk
+    fsType: ext4

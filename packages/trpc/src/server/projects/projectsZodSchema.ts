@@ -48,6 +48,7 @@ export const projectsZodSchema = {
     envs: z.string().optional(),
   }),
 
+  getAll: z.object({ userId: z.string() }),
   read: z.object({ projectId: z.string() }),
   delete: z.object({ projectId: z.string() }),
   toggleAutoDeploy: z.object({

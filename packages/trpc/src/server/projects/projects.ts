@@ -11,24 +11,27 @@ import { trpcProcedure, trpcRouter } from "../trpc";
 import { projectsZodSchema } from "./projectsZodSchema";
 
 export const projectsRouter = trpcRouter({
-  getAll: trpcProcedure.query(async () => {
-    try {
-      const projects = await prisma.projects.findMany({
-        include: {
-          _count: { select: { deployments: true } },
-          deployments: { orderBy: { createdAt: "desc" }, take: 1 },
-        },
-      });
-      return backendRes({ ok: true, result: projects });
-    } catch (error) {
-      console.error(error);
-      return backendRes({
-        ok: false,
-        error: (error as Error).message,
-        result: null,
-      });
-    }
-  }),
+  getAll: trpcProcedure
+    .input(projectsZodSchema.getAll)
+    .query(async ({ input }) => {
+      try {
+        const projects = await prisma.projects.findMany({
+          include: {
+            _count: { select: { deployments: true } },
+            deployments: { orderBy: { createdAt: "desc" }, take: 1 },
+          },
+          where: { userId: input.userId },
+        });
+        return backendRes({ ok: true, result: projects });
+      } catch (error) {
+        console.error(error);
+        return backendRes({
+          ok: false,
+          error: (error as Error).message,
+          result: null,
+        });
+      }
+    }),
   create: trpcProcedure
     .input(projectsZodSchema.create)
     .mutation(async ({ input }) => {
