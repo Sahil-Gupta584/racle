@@ -1,6 +1,7 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { RouterProvider, createRouter } from "@tanstack/react-router";
 import { httpBatchLink } from "@trpc/client";
+import { Analytics } from "@vercel/analytics/react";
 import { useCallback, useEffect, useState } from "react";
 
 // Import the generated route tree
@@ -40,6 +41,8 @@ export function App() {
     <HeroUIProvider>
       <backend.Provider client={trpcClient} queryClient={queryClient}>
         <QueryClientProvider client={queryClient}>
+          <Analytics />
+
           <ToastProvider
             toastProps={{
               classNames: { description: "break-all" },
