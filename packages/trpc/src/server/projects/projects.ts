@@ -1,6 +1,7 @@
 import { Octokit } from "@octokit/rest";
 import { prisma } from "@repo/database";
 
+import { env } from "@repo/lib/envs";
 import {
   backendRes,
   getLatestCommitInfo,
@@ -89,7 +90,7 @@ export const projectsRouter = trpcRouter({
               owner: parsedData.owner,
               repo: parsedData.repo,
               config: {
-                url: "https://2fbc9fd4275a.ngrok-free.app/github-webhook", // Update with your actual domain
+                url: env.VITE_BACKEND_URL + "github-webhook", // Update with your actual domain
                 content_type: "json",
                 secret: webhook_secret,
                 insecure_ssl: "0",
@@ -252,7 +253,7 @@ export const projectsRouter = trpcRouter({
             repo: parsedData.repo,
             config: {
               secret: webhook_secret,
-              url: "https://2fbc9fd4275a.ngrok-free.app/github-webhook",
+              url: env.VITE_BACKEND_URL + "github-webhook",
               content_type: "json",
               insecure_ssl: "0",
             },
