@@ -5,20 +5,24 @@
     "build": "npm run db:generate && turbo run build",
     "tsc:watch": "concurrently -n trpc,lib -c cyan,magenta \"npm run tsc --workspace=@repo/trpc\" \"npm run tsc --workspace=@repo/lib\"",
     "dev": "concurrently \"turbo run dev\" \"npm run tsc:watch\"",
+    "dev:web": "turbo run dev --filter=web",
+    "dev:backend": "turbo run dev --filter=backend",
     "lint": "turbo run lint",
     "format": "prettier . --write ",
     "format:check": "npx prettier --check .",
-    "db:generate": "cd packages/database && npx prisma generate",
+    "db:generate": "npm --workspace packages/database run db:generate",
     "db:migrate": "cd packages/database && npx prisma migrate dev",
     "build:web": "npm run db:generate && turbo run build --filter=web",
     "build:backend": "npm run db:generate && turbo run build --filter=backend",
-    "start:backend": " turbo run start --filter=backend",
+    "start:backend": "turbo run start --filter=backend",
     "start:web": " turbo run start --filter=web"
   },
   "devDependencies": {
+    "@types/node": "^24.10.1",
     "prettier": "^3.6.0",
     "turbo": "^2.5.4",
-    "typescript": "5.8.2"
+    "typescript": "5.8.2",
+    "prisma": "^7.2.0"
   },
   "engines": {
     "node": ">=18"
@@ -29,6 +33,7 @@
     "packages/*"
   ],
   "dependencies": {
+    "@aws-sdk/client-s3": "^3.844.0",
     "@octokit/webhooks": "^14.1.0",
     "@vercel/analytics": "^1.5.0",
     "better-auth": "^1.2.12",

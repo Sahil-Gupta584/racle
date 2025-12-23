@@ -1,6 +1,7 @@
 import fs from "fs";
 
 import {
+  _Object,
   DeleteObjectCommand,
   DeleteObjectsCommand,
   GetObjectCommand,
@@ -90,7 +91,7 @@ export async function deleteAllObjectsFromS3() {
     }
 
     // Step 2: Prepare objects for deletion
-    const objectsToDelete = contents.map((obj) => ({ Key: obj.Key! }));
+    const objectsToDelete = contents.map((obj: _Object) => ({ Key: obj.Key! }));
 
     // Step 3: Send batch delete request
     await s3.send(

@@ -79,10 +79,10 @@ export async function buildAndDeployProject(
   projectId: string
 ) {
   const projectPath = path.resolve("../../buildFolder", projectId);
+  const logs = initLiveLogs(deploymentId); // ✅ call before logging
   try {
     console.log("Started Building", deploymentId);
 
-    const logs = initLiveLogs(deploymentId); // ✅ call before logging
     const emitter = getOrCreateLogStream(deploymentId);
 
     const log = (msg: string) => {
@@ -201,6 +201,13 @@ export async function buildAndDeployProject(
     deleteLogStream(deploymentId);
     clearLiveLogs(deploymentId); // ✅ cleanup
   } catch (error) {
+    await prisma.deployments.update({
+      where: { id: deploymentId },
+      data: {
+        logs: logs.join("\n") + "Some Internal Error Occured! \n End",
+        status: "Error",
+      },
+    });
     await removeProjectDir(projectPath);
     console.log("error in buildAnDeploy", error);
   }

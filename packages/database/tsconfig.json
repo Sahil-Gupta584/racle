@@ -1,8 +1,8 @@
 {
   "compilerOptions": {
-    "module": "ESNext",
+    "module": "nodenext",
     "target": "ES2020",
-    "moduleResolution": "bundler",
+    "moduleResolution": "nodenext",
     "outDir": "./dist",
     "rootDir": "./src",
     "skipLibCheck": true,
@@ -17,8 +17,7 @@
     "moduleDetection": "force",
     "noUncheckedIndexedAccess": true,
     "resolveJsonModule": true,
-    "strict": true
+    "strict": true,
   },
-
-  "exclude": ["dist", "build", "node_modules"]
+  "exclude": ["dist", "build", "node_modules", "prisma.config.ts"]
 }

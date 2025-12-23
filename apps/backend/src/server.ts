@@ -15,6 +15,8 @@ import { getOrCreateLogStream } from "./lib/logStream";
 import { tryCatch } from "./lib/tryCatchWrapper";
 import { verifySignature } from "./lib/utils";
 const app = express();
+console.log("env.VITE_WEB_BASE_URL", env.VITE_WEB_BASE_URL);
+
 app.use(
   cors({
     origin: [env.VITE_WEB_BASE_URL!],
@@ -57,9 +59,10 @@ app.get(
     };
 
     if (deployment.status === "Ready" || deployment.status === "Error") {
-      deployment.logs.split("\n").forEach(send);
-
+      deployment.logs?.split("\n").forEach(send);
+      send("End");
       res.end();
+      return; // ← Stop execution here
     }
     const pastLogs = getLiveLogs(deploymentId);
     pastLogs.forEach(send);
@@ -86,6 +89,7 @@ app.get(
       throw new Error(`deployment not found for deploymentId:${deploymentId}`);
 
     if (deployment?.status !== "Building") {
+      await prisma.deployments.update({ data: { status: 'Building' }, where: { id: deploymentId } })
       enqueueBuild({
         deploymentId: deployment.id,
         projectId: deployment.projectId,
@@ -126,10 +130,10 @@ app.post(
       const latestCommit =
         Array.isArray(commits) && commits.length === 1
           ? commits.sort(
-              (a, b) =>
-                new Date(b.timestamp).getTime() -
-                new Date(a.timestamp).getTime()
-            )[0]
+            (a, b) =>
+              new Date(b.timestamp).getTime() -
+              new Date(a.timestamp).getTime()
+          )[0]
           : null;
       if (!latestCommit.id || !latestCommit.message)
         throw new Error(`Invalid commit payload for projectId:${project.id}`);
@@ -204,10 +208,6 @@ app.get("{*any}", async (req, res) => {
 
 const PORT = env.PORT;
 app.listen(PORT, "0.0.0.0", () => {
-  // console.log({ envs: JSON.stringify(env) });
-  // console.log({ pwd: process.cwd() });
-  // const content = fs.readFileSync("/etc/secrets/.env", "utf8");
-  // console.log({ content });
 
   console.log("server listening on ", PORT);
 });

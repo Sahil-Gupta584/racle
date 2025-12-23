@@ -29,7 +29,7 @@ export default function RouteComponent() {
         </div>
 
         <h1 className="text-3xl font-extrabold bg-gradient-to-r from-white to-forge-300 bg-clip-text text-transparent mb-6">
-          Welcome to DeployForge
+          Welcome to Racle
         </h1>
 
         <p className="text-forge-300 mb-8 text-center">

@@ -32,21 +32,25 @@ function DeploymentPage() {
   const { data, isPending, refetch } = backend.deployment.read.useQuery({
     deploymentId,
   });
-  const [hasTriggered, setHasTriggered] = useState(false);
+  const [streamKey, setStreamKey] = useState(0);
   const backendUtils = backend.useUtils();
 
   useEffect(() => {
-    if (hasTriggered) return;
-    setHasTriggered(true);
+    if (streamKey === 0) return; // Don't run on initial mount
+
+    setLogs([]); // Clear previous logs
     setIsStreaming(true);
+
     const eventSource = new EventSource(
       backendUrl + `/get-logs?deploymentId=${deploymentId}`
     );
+
     backendUtils.projects.read.invalidate();
     eventSource.onmessage = (event) => {
       if (String(event.data).trim() === "End") {
         setIsStreaming(false);
         refetch();
+        eventSource.close();
       } else {
         setLogs((prev) => [...prev, event.data]);
       }
@@ -54,11 +58,18 @@ function DeploymentPage() {
 
     eventSource.onerror = (err) => {
       console.log("EventSource failed:", err);
+      setIsStreaming(false);
       eventSource.close();
     };
+
     return () => {
       eventSource.close();
     };
+  }, [streamKey]);
+
+  // Trigger log stream on initial mount
+  useEffect(() => {
+    setStreamKey(1);
   }, []);
 
   if (isPending) return <div className="p-6">Loading...</div>;
@@ -91,7 +102,16 @@ function DeploymentPage() {
                 <FaExternalLinkAlt className="w-4 h-4 mr-2" />
                 Visit Site
               </a>
-              <button className="flex items-center px-4 py-2 bg-forge-800/50 backdrop-blur-sm hover:bg-forge-700/50 border border-forge-700/50 text-forge-300 hover:text-white rounded-xl transition-all duration-200">
+              <button disabled={deployment.status === 'Building'}
+                onClick={async () => {
+                  await fetch(
+                    `${import.meta.env.VITE_BACKEND_URL}/trigger-deploy?deploymentId=${deploymentId}`
+                  )
+                  refetch()
+                  setStreamKey(prev => prev + 1) // Trigger new log stream
+                }
+                }
+                className="flex items-center px-4 py-2 bg-forge-800/50 backdrop-blur-sm hover:bg-forge-700/50 border border-forge-700/50 text-forge-300 hover:text-white rounded-xl transition-all duration-200">
                 <FiRefreshCw className="w-4 h-4 mr-2" />
                 Redeploy
               </button>
@@ -340,6 +360,6 @@ function DeploymentPage() {
           </div>
         </div>
       </div>
-    </div>
+    </div >
   );
 }

@@ -1,10 +1,11 @@
-import dotenv from "dotenv";
+import { configDotenv } from "dotenv";
 import path from "path";
 import { fileURLToPath } from "url";
 import z from "zod";
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
-dotenv.config({
+
+configDotenv({
   path: [path.resolve(__dirname, "../../../secret/.env"), "/etc/secrets/.env"],
 });
 
