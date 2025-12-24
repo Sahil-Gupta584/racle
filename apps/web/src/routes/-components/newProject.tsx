@@ -194,7 +194,7 @@ export default function NewProject() {
                     createProjectMutation.isPending
                   }
                 >
-                  create
+                  Create
                 </Button>
               </ModalFooter>
             </form>

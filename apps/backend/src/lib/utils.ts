@@ -142,7 +142,7 @@ export async function buildAndDeployProject(
 
       build.on("error", (err) => {
         log(`Spawn error: ${err.message}`);
-        reject(err); // ← This was missing!
+        reject(err);
       });
 
       build.on("close", async (code) => {
@@ -175,6 +175,14 @@ export async function buildAndDeployProject(
       force: true,
     });
     console.log("Deploying", deploymentId);
+    // console.log("S3 Creds:", {
+    //   credentials: {
+    //     accessKeyId: env.CLOUDFLARE_ACCESS_KEY_ID,
+    //     secretAccessKey: env.CLOUDFLARE_SECRET_ACCESS_KEY,
+    //   },
+    //   region: "auto",
+    //   endpoint: env.CLOUDFLARE_ENDPOINT!,
+    // });
 
     //upload build files to s3
     const allFiles = getAllFiles(path.join(projectPath, "dist"));

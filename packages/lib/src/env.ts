@@ -44,25 +44,33 @@ const envSchema = z.object({
 
   CLOUDFLARE_ACCESS_KEY_ID: z
     .string()
+    .trim()
     .length(32, "Expected 32-character CLOUDFLARE access key"),
-  CLOUDFLARE_SECRET_ACCESS_KEY: z.string().min(1),
-  CLOUDFLARE_ENDPOINT: z.string().url(),
+  CLOUDFLARE_SECRET_ACCESS_KEY: z.string().min(1).trim(),
+  CLOUDFLARE_ENDPOINT: z.string().url().trim(),
 
-  GITHUB_CLIENT_ID: z.string().min(1),
-  GITHUB_SECRET: z.string().min(1),
-  GITHUB_WEBHOOK_SECRET: z.string().min(1),
+  GITHUB_CLIENT_ID: z.string().min(1).trim(),
+  GITHUB_SECRET: z.string().min(1).trim(),
+  GITHUB_WEBHOOK_SECRET: z.string().min(1).trim(),
 
-  CLOUDFLARE_API_TOKEN: z.string().min(1),
-  CLOUDFLARE_API_KEY: z.string().min(1),
-  CLOUDFLARE_EMAIL: z.string().email(),
-  CLOUDFLARE_ZONE_ID: z.string().length(32, "Expected 32-character Zone ID"),
-  BACKEND_IP: z.string().min(1).optional(),
+  CLOUDFLARE_API_TOKEN: z.string().min(1).trim(),
+  CLOUDFLARE_API_KEY: z.string().min(1).trim(),
+  CLOUDFLARE_EMAIL: z.string().email().trim(),
+  CLOUDFLARE_ZONE_ID: z
+    .string()
+    .length(32, "Expected 32-character Zone ID")
+    .trim(),
+  BACKEND_IP: z
+    .string()
+    .min(1)
+    .optional()
+    .transform((val) => val?.trim()),
 
-  BETTER_AUTH_SECRET: z.string().min(1),
-  DATABASE_URL: z.string().min(1),
+  BETTER_AUTH_SECRET: z.string().min(1).trim(),
+  DATABASE_URL: z.string().min(1).trim(),
 
-  VITE_WEB_BASE_URL: z.string().url(),
-  VITE_BACKEND_URL: z.string().url(),
+  VITE_WEB_BASE_URL: z.string().url().trim(),
+  VITE_BACKEND_URL: z.string().url().trim(),
   PORT: z.coerce.number().min(1).max(65535),
 });
 

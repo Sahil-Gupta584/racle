@@ -24,8 +24,8 @@ RUN npm run build:backend
 FROM node:22.12-alpine AS runner
 WORKDIR /app
 
-# Install git for repository cloning
-RUN apk add --no-cache git
+# Install git for repository cloning and typescript globally
+RUN apk add --no-cache git && npm install -g typescript
 
 # Copy built backend
 COPY --from=builder /app/apps/backend/dist ./apps/backend/dist
@@ -45,7 +45,6 @@ COPY --from=builder /app/packages/trpc/package.json ./packages/trpc/package.json
 COPY --from=builder /app/node_modules ./node_modules
 COPY --from=builder /app/package.json ./package.json
 
-ENV NODE_ENV=production
 EXPOSE 3001
 
 CMD ["node", "/app/apps/backend/dist/server.js"]

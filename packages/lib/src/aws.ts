@@ -13,8 +13,8 @@ import { env } from "./env";
 
 const s3 = new S3Client({
   credentials: {
-    accessKeyId: env.CLOUDFLARE_ACCESS_KEY_ID!,
-    secretAccessKey: env.CLOUDFLARE_SECRET_ACCESS_KEY!,
+    accessKeyId: env.CLOUDFLARE_ACCESS_KEY_ID,
+    secretAccessKey: env.CLOUDFLARE_SECRET_ACCESS_KEY,
   },
   region: "auto",
   endpoint: env.CLOUDFLARE_ENDPOINT!,
